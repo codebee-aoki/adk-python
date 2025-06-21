@@ -133,3 +133,66 @@ coordinator = Agent(
     sub_agents=[agent1, agent2]  # 自動的なエージェント転送処理
 )
 ```
+
+## Git 管理とコミットルール
+
+### リモートリポジトリ設定
+```bash
+# origin: 公式リポジトリ (読み取り専用)
+origin: https://github.com/google/adk-python.git
+
+# personal_origin: 個人フォーク (プッシュ先)
+personal_origin: https://github.com/codebee-aoki/adk-python.git
+```
+
+### コミットとプッシュのルール
+
+#### コミットタイミング
+作業の重要なポイントでコミットを実行：
+1. **カテゴリ完了時**: 各エージェントカテゴリの技術ドキュメント完成後
+2. **マイルストーン達成時**: 大きな機能や分析の完成時
+3. **トラブルシューティング後**: 問題解決や重要な修正後
+4. **セクション完了時**: 計画された作業セクションの終了時
+
+#### コミットメッセージ形式
+```bash
+# 機能追加（ドキュメント作成）
+git commit -m "feat: Add technical documentation for X agents"
+
+# ドキュメント更新・修正
+git commit -m "docs: Update installation instructions"
+
+# 構造改善・リファクタリング
+git commit -m "refactor: Reorganize documentation structure"
+
+# バグ修正・エラー対応
+git commit -m "fix: Correct code examples in documentation"
+```
+
+#### プッシュ先の指定
+```bash
+# 必ず personal_origin にプッシュ
+git push personal_origin branch_name
+
+# 例
+git push personal_origin local_ja_doc
+```
+
+#### コミットメッセージテンプレート
+```bash
+git commit -m "$(cat <<'EOF'
+feat: Add comprehensive Japanese documentation for ADK sample agents
+
+## Summary
+- [変更内容の要約]
+
+## Details
+- [具体的な変更点]
+- [追加された機能]
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
