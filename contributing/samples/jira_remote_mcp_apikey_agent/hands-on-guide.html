@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jira Remote MCP API Key Agent - ハンズオンガイド</title>
+    <style>
+        :root {
+            --primary-color: #0052cc;
+            --secondary-color: #ff5722;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --background-color: #f5f7fa;
+            --surface-color: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #666666;
+            --border-color: #e1e5e9;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #1a1a1a;
+                --surface-color: #2d2d2d;
+                --text-color: #e0e0e0;
+                --text-secondary: #b0b0b0;
+                --border-color: #404040;
+                --shadow: 0 2px 4px rgba(0,0,0,0.3);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #0066ff);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            background-color: rgba(255,255,255,0.2);
+            height: 4px;
+            margin-top: 1rem;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .nav {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            overflow-x: auto;
+        }
+
+        .nav-list {
+            display: flex;
+            gap: 1rem;
+            list-style: none;
+            white-space: nowrap;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background-color: var(--border-color);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: var(--text-color);
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.4rem;
+        }
+
+        h4 {
+            color: var(--text-color);
+            margin: 1rem 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background-color: #e3f2fd;
+            border-color: var(--primary-color);
+            color: #1565c0;
+        }
+
+        .alert-warning {
+            background-color: #fff3e0;
+            border-color: var(--warning-color);
+            color: #ef6c00;
+        }
+
+        .alert-success {
+            background-color: #e8f5e8;
+            border-color: var(--success-color);
+            color: #2e7d32;
+        }
+
+        .alert-error {
+            background-color: #ffebee;
+            border-color: var(--error-color);
+            color: #c62828;
+        }
+
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-block {
+                background-color: #2d2d2d;
+                color: #e0e0e0;
+            }
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.2s;
+        }
+
+        .copy-button:hover {
+            background-color: #003d99;
+        }
+
+        .copy-button.copied {
+            background-color: var(--success-color);
+        }
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+
+        .button:hover {
+            background-color: #003d99;
+        }
+
+        .button-secondary {
+            background-color: var(--text-secondary);
+        }
+
+        .button-secondary:hover {
+            background-color: #555;
+        }
+
+        .checklist {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            margin-right: 0.8rem;
+            cursor: pointer;
+        }
+
+        .checkbox:checked + label {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .expandable {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+        }
+
+        .expandable-header {
+            padding: 1rem;
+            background-color: var(--border-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .expandable-header:hover {
+            background-color: #d0d0d0;
+        }
+
+        .expandable-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .expandable.open .expandable-content {
+            display: block;
+        }
+
+        .expandable-arrow {
+            transition: transform 0.2s;
+        }
+
+        .expandable.open .expandable-arrow {
+            transform: rotate(180deg);
+        }
+
+        .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 1.5rem 0;
+        }
+
+        .file-tree {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .file-tree {
+                background-color: #2d2d2d;
+                color: #e0e0e0;
+            }
+        }
+
+        .file-tree ul {
+            list-style: none;
+            margin-left: 1rem;
+        }
+
+        .file-tree li {
+            margin: 0.2rem 0;
+        }
+
+        .folder::before {
+            content: "📁 ";
+        }
+
+        .file::before {
+            content: "📄 ";
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .nav {
+                padding: 0.5rem 1rem;
+            }
+
+            .nav-list {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .step {
+                flex-direction: column;
+            }
+
+            .step-number {
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🚀 Jira Remote MCP API Key Agent</h1>
+            <p>ハンズオンガイド - ADK & Jira ツール連携を学ぼう</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </header>
+
+        <nav class="nav">
+            <ul class="nav-list">
+                <li class="nav-item active" data-section="introduction">🏠 はじめに</li>
+                <li class="nav-item" data-section="prerequisites">⚙️ 事前準備</li>
+                <li class="nav-item" data-section="api-token">🔑 API Token</li>
+                <li class="nav-item" data-section="configuration">📝 設定</li>
+                <li class="nav-item" data-section="execution">▶️ 実行</li>
+                <li class="nav-item" data-section="customization">🎨 カスタマイズ</li>
+                <li class="nav-item" data-section="tools">🔧 ツール連携</li>
+                <li class="nav-item" data-section="troubleshooting">🔍 トラブルシューティング</li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <!-- Section 1: Introduction -->
+            <section class="section active" id="introduction">
+                <h2>🏠 はじめに</h2>
+                
+                <div class="alert alert-info">
+                    <strong>👋 ようこそ！</strong> このハンズオンガイドでは、Google の Agent Development Kit (ADK) を使用して、Jira と連携する AI エージェントの構築と活用方法を学びます。
+                </div>
+
+                <h3>📚 このハンズオンで学べること</h3>
+                <ul>
+                    <li><strong>ADK の基本操作</strong> - エージェントの作成と実行</li>
+                    <li><strong>MCP (Model Context Protocol)</strong> - 外部ツールとの連携方法</li>
+                    <li><strong>Jira API 連携</strong> - 課題管理システムとの統合</li>
+                    <li><strong>エージェントのカスタマイズ</strong> - プロンプト改変とツール活用</li>
+                </ul>
+
+                <h3>🎯 対象者</h3>
+                <div class="card">
+                    <h4>✅ こんな方におすすめ</h4>
+                    <ul>
+                        <li>AI エージェント開発に興味がある開発者</li>
+                        <li>Jira の自動化を検討している方</li>
+                        <li>Python の基本的な知識がある方（初心者でも OK）</li>
+                        <li>新しい技術に挑戦したい方</li>
+                    </ul>
+                </div>
+
+                <h3>⚡ 必要な前提知識</h3>
+                <div class="alert alert-warning">
+                    <strong>💡 心配無用！</strong> このガイドは初心者の方でも安心して進められるよう、丁寧に手順を説明しています。Python や Git の基本的な操作ができれば十分です。
+                </div>
+
+                <h3>⏰ 所要時間</h3>
+                <p>約 <strong>45-60分</strong> でハンズオンを完了できます。</p>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-intro-1" class="checkbox">
+                        <label for="check-intro-1">このガイドの概要を理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-intro-2" class="checkbox">
+                        <label for="check-intro-2">所要時間を確認し、十分な時間を確保した</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Prerequisites -->
+            <section class="section" id="prerequisites">
+                <h2>⚙️ 事前準備</h2>
+                
+                <div class="alert alert-info">
+                    <strong>📋 チェックリスト</strong> 以下の環境が整っていることを確認しましょう。
+                </div>
+
+                <h3>🐍 Python 環境の確認</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4>Python 3.11 以上の確認</h4>
+                        <p>以下のコマンドを実行して Python のバージョンを確認してください：</p>
+                        <div class="code-block">
+python --version
+<button class="copy-button" onclick="copyToClipboard('python --version')">コピー</button>
+                        </div>
+                        <p><strong>期待する結果：</strong> Python 3.11.x 以上が表示される</p>
+                    </div>
+                </div>
+
+                <h3>📦 uv のインストール</h3>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4>uv（高速 Python パッケージマネージャー）のインストール</h4>
+                        <p>ADK では依存関係管理に uv を使用します。以下のコマンドでインストールしてください：</p>
+                        
+                        <div class="expandable">
+                            <div class="expandable-header" onclick="toggleExpandable(this)">
+                                <span><strong>macOS / Linux</strong></span>
+                                <span class="expandable-arrow">▼</span>
+                            </div>
+                            <div class="expandable-content">
+                                <div class="code-block">
+curl -LsSf https://astral.sh/uv/install.sh | sh
+<button class="copy-button" onclick="copyToClipboard('curl -LsSf https://astral.sh/uv/install.sh | sh')">コピー</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="expandable">
+                            <div class="expandable-header" onclick="toggleExpandable(this)">
+                                <span><strong>Windows</strong></span>
+                                <span class="expandable-arrow">▼</span>
+                            </div>
+                            <div class="expandable-content">
+                                <div class="code-block">
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+<button class="copy-button" onclick="copyToClipboard('powershell -c \"irm https://astral.sh/uv/install.ps1 | iex\"')">コピー</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p>インストール後、新しいターミナルを開くか、以下を実行してください：</p>
+                        <div class="code-block">
+source ~/.bashrc
+# または
+source ~/.zshrc
+<button class="copy-button" onclick="copyToClipboard('source ~/.bashrc')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🔧 開発環境のセットアップ</h3>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h4>プロジェクトディレクトリへの移動</h4>
+                        <p>まず、contributing/samples ディレクトリに移動しましょう：</p>
+                        <div class="code-block">
+cd contributing/samples
+<button class="copy-button" onclick="copyToClipboard('cd contributing/samples')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h4>仮想環境の作成とアクティベート</h4>
+                        <p>プロジェクト用の Python 仮想環境を作成します：</p>
+                        <div class="code-block">
+uv venv --python "python3.11" ".venv"
+<button class="copy-button" onclick="copyToClipboard('uv venv --python \"python3.11\" \".venv\"')">コピー</button>
+                        </div>
+                        
+                        <p>仮想環境をアクティベートします：</p>
+                        
+                        <div class="expandable">
+                            <div class="expandable-header" onclick="toggleExpandable(this)">
+                                <span><strong>macOS / Linux</strong></span>
+                                <span class="expandable-arrow">▼</span>
+                            </div>
+                            <div class="expandable-content">
+                                <div class="code-block">
+source .venv/bin/activate
+<button class="copy-button" onclick="copyToClipboard('source .venv/bin/activate')">コピー</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="expandable">
+                            <div class="expandable-header" onclick="toggleExpandable(this)">
+                                <span><strong>Windows</strong></span>
+                                <span class="expandable-arrow">▼</span>
+                            </div>
+                            <div class="expandable-content">
+                                <div class="code-block">
+source .venv/Scripts/activate
+<button class="copy-button" onclick="copyToClipboard('source .venv/Scripts/activate')">コピー</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <h4>依存関係のインストール</h4>
+                        <p>ADK とすべての依存関係をインストールします：</p>
+                        <div class="code-block">
+cd ../../  # adk-python のルートディレクトリに移動
+uv sync --all-extras
+<button class="copy-button" onclick="copyToClipboard('cd ../../\nuv sync --all-extras')">コピー</button>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>💡 Tip:</strong> <code>--all-extras</code> オプションにより、MCP サポートを含むすべての機能がインストールされます。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>✅ インストール確認</h3>
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div>
+                        <h4>ADK コマンドの動作確認</h4>
+                        <p>正常にインストールされたか確認しましょう：</p>
+                        <div class="code-block">
+adk --help
+<button class="copy-button" onclick="copyToClipboard('adk --help')">コピー</button>
+                        </div>
+                        <p><strong>期待する結果：</strong> ADK のヘルプメッセージが表示される</p>
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prereq-1" class="checkbox">
+                        <label for="check-prereq-1">Python 3.11 以上がインストールされている</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prereq-2" class="checkbox">
+                        <label for="check-prereq-2">uv がインストールされている</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prereq-3" class="checkbox">
+                        <label for="check-prereq-3">仮想環境が作成・アクティベートされている</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prereq-4" class="checkbox">
+                        <label for="check-prereq-4">ADK の依存関係がインストールされている</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prereq-5" class="checkbox">
+                        <label for="check-prereq-5">adk コマンドが正常に動作する</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: API Token -->
+            <section class="section" id="api-token">
+                <h2>🔑 Atlassian API Token の取得</h2>
+                
+                <div class="alert alert-warning">
+                    <strong>🔒 セキュリティ重要事項</strong> API Token は強力な権限を持ちます。安全に管理し、不要になったら必ず削除してください。
+                </div>
+
+                <h3>📋 前提条件</h3>
+                <ul>
+                    <li>Jira Cloud インスタンスへのアクセス権</li>
+                    <li>課題の作成・編集権限</li>
+                    <li>Atlassian アカウント（your-email@example.com）</li>
+                </ul>
+
+                <h3>🎯 API Token 作成手順</h3>
+
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4>Atlassian API Token 管理ページにアクセス</h4>
+                        <p>以下のリンクをクリックして、Atlassian の API Token 管理ページを開いてください：</p>
+                        <div class="code-block">
+https://id.atlassian.com/manage-profile/security/api-tokens
+<button class="copy-button" onclick="copyToClipboard('https://id.atlassian.com/manage-profile/security/api-tokens')">コピー</button>
+                        </div>
+                        <p><a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" class="button">🔗 API Token 管理ページを開く</a></p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4>Atlassian アカウントにログイン</h4>
+                        <p>お使いの Atlassian アカウント（Jira にアクセスする際のメールアドレス）でログインしてください。</p>
+                        <div class="alert alert-info">
+                            <strong>💡 Tip:</strong> 複数の Atlassian アカウントをお持ちの場合は、Jira インスタンスにアクセス権のあるアカウントを選択してください。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h4>API Token を作成</h4>
+                        <p>「<strong>Create API token</strong>」ボタンをクリックしてください。</p>
+                        <div class="alert alert-info">
+                            <strong>📍 場所:</strong> ページ上部の青い「Create API token」ボタンです。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h4>Token に名前を付ける</h4>
+                        <p>わかりやすい名前を入力してください。推奨：</p>
+                        <div class="code-block">
+ADK-Jira-MCP-Integration
+<button class="copy-button" onclick="copyToClipboard('ADK-Jira-MCP-Integration')">コピー</button>
+                        </div>
+                        <p>「<strong>Create</strong>」をクリックして Token を生成します。</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <h4>⚠️ 重要：Token を即座にコピー</h4>
+                        <div class="alert alert-error">
+                            <strong>🚨 緊急事項</strong> 生成された API Token は<strong>一度しか表示されません</strong>。必ず今すぐコピーして安全な場所に保存してください！
+                        </div>
+                        <p>表示された Token をコピーして、一時的にメモ帳などに保存してください。</p>
+                        <div class="card">
+                            <h4>💾 保存場所の例</h4>
+                            <ul>
+                                <li>パスワード管理ツール（1Password、Bitwarden など）</li>
+                                <li>一時的なメモ帳（作業完了後は削除）</li>
+                                <li>暗号化された文書</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>📝 必要な情報の整理</h3>
+                <div class="card">
+                    <h4>以下の情報を控えてください：</h4>
+                    <div class="code-block">
+# 1. Jira ドメイン（例）
+your-company.atlassian.net
+
+# 2. メールアドレス（例）
+your-email@example.com
+
+# 3. API Token（例 - 実際のものは異なります）
+ATATT3xFfGF0T...（長い文字列）
+<button class="copy-button" onclick="copyToClipboard('# 控えた情報をここに記録\n# 1. Jira ドメイン:\n# 2. メールアドレス:\n# 3. API Token:')">テンプレートをコピー</button>
+                    </div>
+                </div>
+
+                <h3>🔍 トラブルシューティング</h3>
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>「Create API token」ボタンが見つからない</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <ul>
+                            <li>正しい Atlassian アカウントでログインしているか確認</li>
+                            <li>ブラウザのキャッシュをクリアして再試行</li>
+                            <li>別のブラウザで試行</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>Token が表示されない</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <ul>
+                            <li>ポップアップブロッカーを無効にする</li>
+                            <li>JavaScript が有効になっているか確認</li>
+                            <li>ページを再読み込みして再試行</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-token-1" class="checkbox">
+                        <label for="check-token-1">API Token 管理ページにアクセスした</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-token-2" class="checkbox">
+                        <label for="check-token-2">正しいアカウントでログインした</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-token-3" class="checkbox">
+                        <label for="check-token-3">API Token を作成した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-token-4" class="checkbox">
+                        <label for="check-token-4">Token を安全な場所にコピー・保存した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-token-5" class="checkbox">
+                        <label for="check-token-5">Jira ドメイン、メールアドレス、Token の3点を控えた</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Configuration -->
+            <section class="section" id="configuration">
+                <h2>📝 エージェント設定</h2>
+                
+                <div class="alert alert-info">
+                    <strong>🎯 目標</strong> API Token を使用してエージェントがJiraに接続できるよう設定ファイルを作成します。
+                </div>
+
+                <h3>📂 ディレクトリ構造の確認</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4>正しいディレクトリにいることを確認</h4>
+                        <p>まず、contributing/samples ディレクトリにいることを確認しましょう：</p>
+                        <div class="code-block">
+pwd
+ls jira_remote_mcp_apikey_agent/
+<button class="copy-button" onclick="copyToClipboard('pwd\nls jira_remote_mcp_apikey_agent/')">コピー</button>
+                        </div>
+                        <p><strong>期待する結果：</strong> jira_remote_mcp_apikey_agent ディレクトリが存在し、以下のファイルが表示される</p>
+                        <div class="file-tree">
+                            <ul>
+                                <li class="folder">jira_remote_mcp_apikey_agent/</li>
+                                <ul>
+                                    <li class="file">README.md</li>
+                                    <li class="file">README_ja.md</li>
+                                    <li class="file">.env.example</li>
+                                    <li class="file">agent.py</li>
+                                    <li class="file">main.py</li>
+                                    <li class="file">__init__.py</li>
+                                </ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>⚙️ 環境設定ファイルの作成</h3>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4>jira_remote_mcp_apikey_agent ディレクトリに移動</h4>
+                        <div class="code-block">
+cd jira_remote_mcp_apikey_agent/
+<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h4>.env ファイルを作成</h4>
+                        <p>テンプレートファイルをコピーして設定ファイルを作成します：</p>
+                        <div class="code-block">
+cp .env.example .env
+<button class="copy-button" onclick="copyToClipboard('cp .env.example .env')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h4>.env ファイルを編集</h4>
+                        <p>お好みのエディタで .env ファイルを開いて編集してください：</p>
+                        
+                        <div class="expandable">
+                            <div class="expandable-header" onclick="toggleExpandable(this)">
+                                <span><strong>VS Code を使用する場合</strong></span>
+                                <span class="expandable-arrow">▼</span>
+                            </div>
+                            <div class="expandable-content">
+                                <div class="code-block">
+code .env
+<button class="copy-button" onclick="copyToClipboard('code .env')">コピー</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="expandable">
+                            <div class="expandable-header" onclick="toggleExpandable(this)">
+                                <span><strong>nano エディタを使用する場合</strong></span>
+                                <span class="expandable-arrow">▼</span>
+                            </div>
+                            <div class="expandable-content">
+                                <div class="code-block">
+nano .env
+<button class="copy-button" onclick="copyToClipboard('nano .env')">コピー</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="expandable">
+                            <div class="expandable-header" onclick="toggleExpandable(this)">
+                                <span><strong>vim エディタを使用する場合</strong></span>
+                                <span class="expandable-arrow">▼</span>
+                            </div>
+                            <div class="expandable-content">
+                                <div class="code-block">
+vim .env
+<button class="copy-button" onclick="copyToClipboard('vim .env')">コピー</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>✏️ 設定値の入力</h3>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <h4>実際の値に置き換える</h4>
+                        <p>前のセクションで控えた情報を使用して、以下のように設定してください：</p>
+                        
+                        <div class="card">
+                            <h4>📝 設定例</h4>
+                            <div class="code-block">
+# あなたの Jira Cloud ドメイン（https:// は不要）
+JIRA_DOMAIN=your-company.atlassian.net
+
+# あなたの Atlassian アカウントのメールアドレス
+JIRA_EMAIL=your-email@example.com
+
+# 前のセクションで作成した API Token
+JIRA_API_TOKEN=ATATT3xFfGF0T...（実際のToken）
+
+# オプション（通常は変更不要）
+# JIRA_MCP_SERVER_URL=https://mcp.atlassian.com/v1/sse
+# JIRA_CONNECTION_TIMEOUT=30
+<button class="copy-button" onclick="copyToClipboard('# 設定テンプレート\nJIRA_DOMAIN=your-company.atlassian.net\nJIRA_EMAIL=your-email@example.com\nJIRA_API_TOKEN=your-api-token-here')">テンプレートをコピー</button>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <strong>⚠️ 注意事項</strong>
+                            <ul>
+                                <li><code>JIRA_DOMAIN</code> には <code>https://</code> を含めないでください</li>
+                                <li><code>JIRA_EMAIL</code> は Jira にアクセスする際のメールアドレスを使用</li>
+                                <li><code>JIRA_API_TOKEN</code> は前のセクションで控えた Token をそのまま貼り付け</li>
+                                <li>コメント行（# で始まる行）は削除しても構いません</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>💾 設定の保存と確認</h3>
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div>
+                        <h4>ファイルを保存</h4>
+                        <p>エディタで変更を保存してください：</p>
+                        <ul>
+                            <li><strong>VS Code:</strong> Ctrl+S (Windows/Linux) または Cmd+S (Mac)</li>
+                            <li><strong>nano:</strong> Ctrl+X → Y → Enter</li>
+                            <li><strong>vim:</strong> Esc → :wq → Enter</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <div>
+                        <h4>設定内容の確認</h4>
+                        <p>正しく設定されているか確認しましょう：</p>
+                        <div class="code-block">
+cat .env
+<button class="copy-button" onclick="copyToClipboard('cat .env')">コピー</button>
+                        </div>
+                        <p><strong>期待する結果:</strong> あなたの実際の情報が表示される（Token は一部のみ表示されます）</p>
+                    </div>
+                </div>
+
+                <h3>🔒 セキュリティの確認</h3>
+                <div class="alert alert-error">
+                    <strong>🚨 重要なセキュリティ注意事項</strong>
+                    <ul>
+                        <li><code>.env</code> ファイルは絶対に Git にコミットしないでください</li>
+                        <li>他の人と共有しないでください</li>
+                        <li>作業終了後は Token を削除することを検討してください</li>
+                    </ul>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">8</div>
+                    <div>
+                        <h4>.gitignore の確認</h4>
+                        <p>.env ファイルが Git 管理対象外になっているか確認：</p>
+                        <div class="code-block">
+git status
+<button class="copy-button" onclick="copyToClipboard('git status')">コピー</button>
+                        </div>
+                        <p><strong>期待する結果:</strong> .env ファイルが「Untracked files」に表示されない</p>
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-config-1" class="checkbox">
+                        <label for="check-config-1">jira_remote_mcp_apikey_agent ディレクトリに移動した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-config-2" class="checkbox">
+                        <label for="check-config-2">.env ファイルを作成した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-config-3" class="checkbox">
+                        <label for="check-config-3">JIRA_DOMAIN を正しく設定した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-config-4" class="checkbox">
+                        <label for="check-config-4">JIRA_EMAIL を正しく設定した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-config-5" class="checkbox">
+                        <label for="check-config-5">JIRA_API_TOKEN を正しく設定した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-config-6" class="checkbox">
+                        <label for="check-config-6">設定ファイルを保存した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-config-7" class="checkbox">
+                        <label for="check-config-7">セキュリティに関する注意事項を理解した</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Execution -->
+            <section class="section" id="execution">
+                <h2>▶️ エージェントの実行</h2>
+                
+                <div class="alert alert-success">
+                    <strong>🎉 いよいよ実行！</strong> 設定が完了したので、エージェントを実際に動かしてみましょう。
+                </div>
+
+                <h3>🚀 ADK Web インターフェースの起動</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4>contributing/samples ディレクトリに戻る</h4>
+                        <p>エージェントディレクトリの親ディレクトリに移動します：</p>
+                        <div class="code-block">
+cd ..
+pwd
+<button class="copy-button" onclick="copyToClipboard('cd ..\npwd')">コピー</button>
+                        </div>
+                        <p><strong>期待する結果:</strong> .../contributing/samples が表示される</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4>ADK Web サーバーを起動</h4>
+                        <p>以下のコマンドでエージェントを起動します：</p>
+                        <div class="code-block">
+adk web jira_remote_mcp_apikey_agent/
+<button class="copy-button" onclick="copyToClipboard('adk web jira_remote_mcp_apikey_agent/')">コピー</button>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>💡 起動時の表示例</strong>
+                            <pre>Starting ADK web server...
+Loaded agent: Jira Remote MCP API Key Agent
+Server running at: http://localhost:8000
+Open your browser and navigate to the URL above</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h4>ブラウザでアクセス</h4>
+                        <p>以下の URL をブラウザで開いてください：</p>
+                        <div class="code-block">
+http://localhost:8000
+<button class="copy-button" onclick="copyToClipboard('http://localhost:8000')">コピー</button>
+                        </div>
+                        <p><a href="http://localhost:8000" target="_blank" class="button">🌐 ADK Web インターフェースを開く</a></p>
+                    </div>
+                </div>
+
+                <h3>🌟 初回動作確認</h3>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h4>エージェントの読み込み確認</h4>
+                        <p>ブラウザで以下が表示されることを確認してください：</p>
+                        <ul>
+                            <li>✅ エージェント名：「Jira Remote MCP API Key Agent」</li>
+                            <li>✅ チャット入力欄が表示されている</li>
+                            <li>✅ エラーメッセージが表示されていない</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <h4>簡単な動作テスト</h4>
+                        <p>チャット欄に以下のメッセージを入力して送信してください：</p>
+                        <div class="code-block">
+こんにちは！あなたは何ができますか？
+<button class="copy-button" onclick="copyToClipboard('こんにちは！あなたは何ができますか？')">コピー</button>
+                        </div>
+                        <p><strong>期待する結果:</strong> エージェントが自己紹介と利用可能な機能について返答する</p>
+                    </div>
+                </div>
+
+                <h3>🔍 Jira 接続テスト</h3>
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div>
+                        <h4>基本的な Jira 操作をテスト</h4>
+                        <p>以下のような質問を試してみましょう：</p>
+                        
+                        <div class="card">
+                            <h4>🧪 テスト用クエリの例</h4>
+                            <div class="code-block">
+プロジェクト一覧を表示してください
+<button class="copy-button" onclick="copyToClipboard('プロジェクト一覧を表示してください')">コピー</button>
+                            </div>
+                            <div class="code-block">
+私に割り当てられている課題を教えてください
+<button class="copy-button" onclick="copyToClipboard('私に割り当てられている課題を教えてください')">コピー</button>
+                            </div>
+                            <div class="code-block">
+最近作成された課題を5件表示してください
+<button class="copy-button" onclick="copyToClipboard('最近作成された課題を5件表示してください')">コピー</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🔧 トラブルシューティング</h3>
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>サーバーが起動しない</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="alert alert-warning">
+                            <strong>チェック項目:</strong>
+                            <ul>
+                                <li>仮想環境がアクティベートされているか確認</li>
+                                <li>contributing/samples ディレクトリにいるか確認</li>
+                                <li>ポート 8000 が他のプロセスで使用されていないか確認</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+# 仮想環境の確認
+which python
+
+# ポート使用状況の確認
+lsof -i :8000
+<button class="copy-button" onclick="copyToClipboard('which python\nlsof -i :8000')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>認証エラーが発生する</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="alert alert-error">
+                            <strong>確認項目:</strong>
+                            <ul>
+                                <li>.env ファイルの設定値を再確認</li>
+                                <li>API Token が正しいか確認</li>
+                                <li>メールアドレスが正しいか確認</li>
+                                <li>Jira ドメインが正しいか確認</li>
+                            </ul>
+                        </div>
+                        <div class="code-block">
+# 設定確認
+cat .env | grep -v API_TOKEN
+<button class="copy-button" onclick="copyToClipboard('cat .env | grep -v API_TOKEN')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>ブラウザでページが開かない</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <ul>
+                            <li>URL が正確に入力されているか確認：<code>http://localhost:8000</code></li>
+                            <li>別のブラウザで試行</li>
+                            <li>プライベートモード/シークレットモードで試行</li>
+                            <li>キャッシュをクリアして再試行</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>⏹️ サーバーの停止</h3>
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <div>
+                        <h4>作業終了時の停止方法</h4>
+                        <p>ターミナルで以下のキーを押してサーバーを停止できます：</p>
+                        <div class="code-block">
+Ctrl + C
+<button class="copy-button" onclick="copyToClipboard('Ctrl + C')">コピー</button>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>💡 Tip:</strong> サーバーを停止すると、ブラウザでのアクセスができなくなります。再度起動するには <code>adk web</code> コマンドを実行してください。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-exec-1" class="checkbox">
+                        <label for="check-exec-1">contributing/samples ディレクトリに移動した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-exec-2" class="checkbox">
+                        <label for="check-exec-2">adk web コマンドでサーバーを起動した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-exec-3" class="checkbox">
+                        <label for="check-exec-3">ブラウザで http://localhost:8000 にアクセスした</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-exec-4" class="checkbox">
+                        <label for="check-exec-4">エージェントが正常に読み込まれた</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-exec-5" class="checkbox">
+                        <label for="check-exec-5">簡単な動作テストが成功した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-exec-6" class="checkbox">
+                        <label for="check-exec-6">Jira との接続テストが成功した</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 6: Customization -->
+            <section class="section" id="customization">
+                <h2>🎨 エージェントのカスタマイズ</h2>
+                
+                <div class="alert alert-info">
+                    <strong>🎯 学習目標</strong> エージェントのプロンプトを変更して、動作をカスタマイズする方法を学びます。
+                </div>
+
+                <h3>📖 エージェントコードの理解</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4>agent.py ファイルを確認</h4>
+                        <p>まず、現在のエージェントの設定を確認しましょう：</p>
+                        <div class="code-block">
+cd jira_remote_mcp_apikey_agent/
+cat agent.py
+<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/\ncat agent.py')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>✏️ プロンプトの改変実習</h3>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4>agent.py をバックアップ</h4>
+                        <p>元のファイルを保存しておきましょう：</p>
+                        <div class="code-block">
+cp agent.py agent.py.backup
+<button class="copy-button" onclick="copyToClipboard('cp agent.py agent.py.backup')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h4>プロンプトの変更</h4>
+                        <p>agent.py ファイルを編集して、instruction 部分を変更してみましょう：</p>
+                        <div class="code-block">
+code agent.py
+<button class="copy-button" onclick="copyToClipboard('code agent.py')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🧪 カスタマイズ例</h3>
+                <div class="card">
+                    <h4>例1: より親しみやすいアシスタント</h4>
+                    <p>70-80行目あたりの <code>instruction</code> 部分を以下のように変更：</p>
+                    <div class="code-block">
+instruction=f"""
+あなたは {config.jira_domain} の親しみやすい Jira アシスタント「ジラちゃん」です！ 😊
+以下のような作業で皆さんをサポートします：
+
+🎯 課題管理のお手伝い：
+- 新しい課題の作成
+- 既存課題の更新と管理
+- 課題の検索とフィルタリング
+
+📊 プロジェクト分析：
+- プロジェクトの進捗状況の分析
+- チームのワークロード確認
+- 期限が近い課題の確認
+
+🔍 JQL クエリのサポート：
+- 複雑な検索条件の構築
+- カスタムレポートの作成
+
+いつでも気軽に話しかけてくださいね！ 
+何か困ったことがあれば、詳しく教えてください。一緒に解決しましょう！ 💪
+""",
+<button class="copy-button" onclick="copyToClipboard('instruction=f\"\"\"\nあなたは {config.jira_domain} の親しみやすい Jira アシスタント「ジラちゃん」です！ 😊\n以下のような作業で皆さんをサポートします：\n\n🎯 課題管理のお手伝い：\n- 新しい課題の作成\n- 既存課題の更新と管理\n- 課題の検索とフィルタリング\n\n📊 プロジェクト分析：\n- プロジェクトの進捗状況の分析\n- チームのワークロード確認\n- 期限が近い課題の確認\n\n🔍 JQL クエリのサポート：\n- 複雑な検索条件の構築\n- カスタムレポートの作成\n\nいつでも気軽に話しかけてくださいね！ \n何か困ったことがあれば、詳しく教えてください。一緒に解決しましょう！ 💪\n\"\"\",')">コピー</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h4>例2: 技術チーム向け専門アシスタント</h4>
+                    <div class="code-block">
+instruction=f"""
+あなたは {config.jira_domain} の技術チーム専用 Jira アシスタントです。
+ソフトウェア開発プロジェクトの管理に特化した支援を提供します。
+
+## 主要機能：
+
+### バグ管理：
+- バグレポートの作成と優先度設定
+- バグの再現手順の整理
+- 修正状況の追跡とレポート
+
+### 開発タスク管理：
+- ユーザーストーリーとタスクの作成
+- スプリント計画のサポート
+- 開発進捗の可視化
+
+### 技術的分析：
+- コードレビュー課題の管理
+- 技術債務の追跡
+- パフォーマンス課題の分析
+
+### 自動化支援：
+- 定期的なレポート生成
+- 課題のバッチ更新
+- カスタム JQL クエリの構築
+
+技術的な質問や複雑な課題管理のご相談があれば、
+具体的な要件をお聞かせください。
+最適なソリューションを提案いたします。
+""",
+<button class="copy-button" onclick="copyToClipboard('instruction=f\"\"\"\nあなたは {config.jira_domain} の技術チーム専用 Jira アシスタントです。\nソフトウェア開発プロジェクトの管理に特化した支援を提供します。\n\n## 主要機能：\n\n### バグ管理：\n- バグレポートの作成と優先度設定\n- バグの再現手順の整理\n- 修正状況の追跡とレポート\n\n### 開発タスク管理：\n- ユーザーストーリーとタスクの作成\n- スプリント計画のサポート\n- 開発進捗の可視化\n\n### 技術的分析：\n- コードレビュー課題の管理\n- 技術債務の追跡\n- パフォーマンス課題の分析\n\n### 自動化支援：\n- 定期的なレポート生成\n- 課題のバッチ更新\n- カスタム JQL クエリの構築\n\n技術的な質問や複雑な課題管理のご相談があれば、\n具体的な要件をお聞かせください。\n最適なソリューションを提案いたします。\n\"\"\",')">コピー</button>
+                    </div>
+                </div>
+
+                <h3>🔄 変更の適用とテスト</h3>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h4>変更を保存</h4>
+                        <p>エディタで変更を保存してください。</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <h4>サーバーを再起動</h4>
+                        <p>現在のサーバーを停止し（Ctrl+C）、再度起動します：</p>
+                        <div class="code-block">
+cd ..
+adk web jira_remote_mcp_apikey_agent/
+<button class="copy-button" onclick="copyToClipboard('cd ..\nadk web jira_remote_mcp_apikey_agent/')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div>
+                        <h4>変更の確認</h4>
+                        <p>ブラウザをリロードして、エージェントの挙動を確認してください：</p>
+                        <div class="code-block">
+こんにちは！自己紹介をお願いします。
+<button class="copy-button" onclick="copyToClipboard('こんにちは！自己紹介をお願いします。')">コピー</button>
+                        </div>
+                        <p><strong>期待する結果:</strong> 変更したプロンプトに基づいた返答が表示される</p>
+                    </div>
+                </div>
+
+                <h3>🔬 高度なカスタマイズ</h3>
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>エージェント名の変更</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <p><code>name</code> フィールドを変更して、エージェントの表示名を変更できます：</p>
+                        <div class="code-block">
+name="ジラちゃん - チーム専用アシスタント",
+<button class="copy-button" onclick="copyToClipboard('name=\"ジラちゃん - チーム専用アシスタント\",')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>エージェントの説明を変更</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <p><code>description</code> フィールドを変更して、エージェントの説明を更新できます：</p>
+                        <div class="code-block">
+description="""
+カスタマイズされた Jira エージェントです。
+チーム専用の機能と親しみやすいインターフェースを提供します。
+""",
+<button class="copy-button" onclick="copyToClipboard('description=\"\"\"\nカスタマイズされた Jira エージェントです。\nチーム専用の機能と親しみやすいインターフェースを提供します。\n\"\"\",')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>💡 カスタマイズのベストプラクティス</h3>
+                <div class="alert alert-success">
+                    <strong>🌟 効果的なプロンプトのコツ</strong>
+                    <ul>
+                        <li><strong>具体的な役割を定義</strong> - エージェントの専門分野を明確にする</li>
+                        <li><strong>期待する動作を説明</strong> - どのように応答してほしいかを記述</li>
+                        <li><strong>制約や注意事項を含める</strong> - 重要な操作前の確認など</li>
+                        <li><strong>チームの文化に合わせる</strong> - フォーマルか親しみやすいかなど</li>
+                    </ul>
+                </div>
+
+                <h3>🔄 元に戻す方法</h3>
+                <div class="step">
+                    <div class="step-number">7</div>
+                    <div>
+                        <h4>オリジナルに戻す</h4>
+                        <p>変更を元に戻したい場合は、バックアップファイルを使用します：</p>
+                        <div class="code-block">
+cd jira_remote_mcp_apikey_agent/
+cp agent.py.backup agent.py
+<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/\ncp agent.py.backup agent.py')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-custom-1" class="checkbox">
+                        <label for="check-custom-1">agent.py ファイルを確認した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-custom-2" class="checkbox">
+                        <label for="check-custom-2">バックアップファイルを作成した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-custom-3" class="checkbox">
+                        <label for="check-custom-3">プロンプトをカスタマイズした</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-custom-4" class="checkbox">
+                        <label for="check-custom-4">変更を保存しサーバーを再起動した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-custom-5" class="checkbox">
+                        <label for="check-custom-5">カスタマイズ結果を確認した</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7: Tools -->
+            <section class="section" id="tools">
+                <h2>🔧 ツール連携の理解</h2>
+                
+                <div class="alert alert-info">
+                    <strong>🎯 学習目標</strong> MCP (Model Context Protocol) を通じたツール連携の仕組みを理解し、実際の Jira 操作を体験します。
+                </div>
+
+                <h3>📚 MCP とは？</h3>
+                <div class="card">
+                    <h4>Model Context Protocol (MCP) の概要</h4>
+                    <p>MCP は AI エージェントが外部のツールやサービスと安全に連携するためのプロトコルです。</p>
+                    <ul>
+                        <li><strong>統一されたインターフェース</strong> - 異なるサービスを同じ方法で操作</li>
+                        <li><strong>セキュリティ</strong> - 認証とアクセス制御の一元管理</li>
+                        <li><strong>拡張性</strong> - 新しいツールを簡単に追加可能</li>
+                        <li><strong>リアルタイム</strong> - SSE（Server-Sent Events）による即座の応答</li>
+                    </ul>
+                </div>
+
+                <h3>🔗 このエージェントの仕組み</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4>アーキテクチャの理解</h4>
+                        <div class="file-tree">
+                            <ul>
+                                <li class="folder">接続フロー</li>
+                                <ul>
+                                    <li class="file">ユーザー → ADK Web インターフェース</li>
+                                    <li class="file">ADK → Jira Remote MCP Agent</li>
+                                    <li class="file">Agent → MCP Toolset</li>
+                                    <li class="file">MCP Toolset → Atlassian MCP Server</li>
+                                    <li class="file">Atlassian MCP Server → Jira Cloud API</li>
+                                </ul>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🛠️ 利用可能な Jira 操作</h3>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4>実際にツールを確認</h4>
+                        <p>エージェントに以下の質問をして、利用可能なツールを確認してみましょう：</p>
+                        <div class="code-block">
+どのような Jira 操作ができますか？利用可能なツールを教えてください。
+<button class="copy-button" onclick="copyToClipboard('どのような Jira 操作ができますか？利用可能なツールを教えてください。')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🧪 実践的なツール利用例</h3>
+                
+                <div class="card">
+                    <h4>例1: プロジェクト情報の取得</h4>
+                    <div class="code-block">
+利用可能なプロジェクトをすべて表示してください。プロジェクトキー、名前、説明を含めてください。
+<button class="copy-button" onclick="copyToClipboard('利用可能なプロジェクトをすべて表示してください。プロジェクトキー、名前、説明を含めてください。')">コピー</button>
+                    </div>
+                    <p><strong>学習ポイント:</strong> プロジェクト一覧取得ツールの動作</p>
+                </div>
+
+                <div class="card">
+                    <h4>例2: JQL クエリの実行</h4>
+                    <div class="code-block">
+assignee = currentUser() AND status != Done という JQL クエリを実行して、私の未完了タスクを表示してください。
+<button class="copy-button" onclick="copyToClipboard('assignee = currentUser() AND status != Done という JQL クエリを実行して、私の未完了タスクを表示してください。')">コピー</button>
+                    </div>
+                    <p><strong>学習ポイント:</strong> JQL 検索ツールの活用</p>
+                </div>
+
+                <div class="card">
+                    <h4>例3: 課題の詳細情報取得</h4>
+                    <div class="code-block">
+最近更新された課題を1件選んで、その詳細情報（コメント、添付ファイル、課題の履歴を含む）を表示してください。
+<button class="copy-button" onclick="copyToClipboard('最近更新された課題を1件選んで、その詳細情報（コメント、添付ファイル、課題の履歴を含む）を表示してください。')">コピー</button>
+                    </div>
+                    <p><strong>学習ポイント:</strong> 複数のツールを組み合わせた操作</p>
+                </div>
+
+                <div class="card">
+                    <h4>例4: 新しい課題の作成</h4>
+                    <div class="code-block">
+「ハンズオンガイドのテスト」という題名でタスクを作成してください。説明には「ADK ハンズオンでのテスト課題です」と入力してください。
+<button class="copy-button" onclick="copyToClipboard('「ハンズオンガイドのテスト」という題名でタスクを作成してください。説明には「ADK ハンズオンでのテスト課題です」と入力してください。')">コピー</button>
+                    </div>
+                    <p><strong>学習ポイント:</strong> 課題作成ツールの使用</p>
+                    <div class="alert alert-warning">
+                        <strong>⚠️ 注意:</strong> 実際の課題が作成されます。不要な場合は後で削除してください。
+                    </div>
+                </div>
+
+                <h3>🔍 ツール実行の観察</h3>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h4>ツール呼び出しの確認</h4>
+                        <p>エージェントがツールを使用する際は、以下のような流れで動作します：</p>
+                        <ol>
+                            <li><strong>ユーザーリクエストの解析</strong> - 何をすべきかを理解</li>
+                            <li><strong>適切なツールの選択</strong> - 必要なMCPツールを決定</li>
+                            <li><strong>ツール実行</strong> - Atlassian MCP サーバーへのリクエスト</li>
+                            <li><strong>結果の処理</strong> - レスポンスを整理して表示</li>
+                            <li><strong>ユーザーへの報告</strong> - 理解しやすい形で結果を提示</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h3>⚡ 高度な連携パターン</h3>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h4>複数ツールの組み合わせ</h4>
+                        <p>以下のような複雑な操作も可能です：</p>
+                        <div class="code-block">
+プロジェクト一覧を取得して、各プロジェクトの未完了課題数を調べ、最も課題が多いプロジェクトを教えてください。
+<button class="copy-button" onclick="copyToClipboard('プロジェクト一覧を取得して、各プロジェクトの未完了課題数を調べ、最も課題が多いプロジェクトを教えてください。')">コピー</button>
+                        </div>
+                        <p><strong>学習ポイント:</strong> 複数のAPIコールを自動で組み合わせる能力</p>
+                    </div>
+                </div>
+
+                <h3>🔒 セキュリティと権限</h3>
+                <div class="alert alert-info">
+                    <strong>🛡️ セキュリティモデル</strong>
+                    <ul>
+                        <li><strong>API Token ベース認証</strong> - あなたの Jira アカウントの権限で動作</li>
+                        <li><strong>権限の継承</strong> - エージェントはあなたができることのみ実行可能</li>
+                        <li><strong>監査ログ</strong> - すべての操作は Jira の活動ログに記録</li>
+                        <li><strong>透明性</strong> - エージェントが実行する操作は事前に説明</li>
+                    </ul>
+                </div>
+
+                <h3>📊 パフォーマンスの考慮事項</h3>
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>レスポンス時間について</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <ul>
+                            <li><strong>ネットワーク遅延</strong> - リモート MCP サーバーとの通信時間</li>
+                            <li><strong>Jira API 応答時間</strong> - クエリの複雑さに依存</li>
+                            <li><strong>データ量</strong> - 大きな結果セットは処理に時間がかかる</li>
+                            <li><strong>レート制限</strong> - Atlassian API の利用制限</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>🎯 実習課題</h3>
+                <div class="card">
+                    <h4>チャレンジ課題: カスタム分析レポート</h4>
+                    <p>以下の情報を含む分析レポートをエージェントに作成してもらいましょう：</p>
+                    <div class="code-block">
+以下の分析レポートを作成してください：
+1. 全プロジェクトの課題数
+2. 自分に割り当てられた課題の状況
+3. 今週作成された課題の一覧
+4. 優先度別の課題分布
+レポートは表形式で見やすく整理してください。
+<button class="copy-button" onclick="copyToClipboard('以下の分析レポートを作成してください：\n1. 全プロジェクトの課題数\n2. 自分に割り当てられた課題の状況\n3. 今週作成された課題の一覧\n4. 優先度別の課題分布\nレポートは表形式で見やすく整理してください。')">コピー</button>
+                    </div>
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-tools-1" class="checkbox">
+                        <label for="check-tools-1">MCP の概念を理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-tools-2" class="checkbox">
+                        <label for="check-tools-2">エージェントのアーキテクチャを理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-tools-3" class="checkbox">
+                        <label for="check-tools-3">利用可能なツールを確認した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-tools-4" class="checkbox">
+                        <label for="check-tools-4">プロジェクト情報の取得を試した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-tools-5" class="checkbox">
+                        <label for="check-tools-5">JQL クエリの実行を試した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-tools-6" class="checkbox">
+                        <label for="check-tools-6">課題の詳細情報取得を試した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-tools-7" class="checkbox">
+                        <label for="check-tools-7">新しい課題の作成を試した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-tools-8" class="checkbox">
+                        <label for="check-tools-8">複数ツールの組み合わせを理解した</label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 8: Troubleshooting -->
+            <section class="section" id="troubleshooting">
+                <h2>🔍 トラブルシューティング</h2>
+                
+                <div class="alert alert-info">
+                    <strong>🎯 目標</strong> よくある問題の解決方法を学び、今後の開発で役立つデバッグスキルを身につけます。
+                </div>
+
+                <h3>🚨 よくある問題と解決方法</h3>
+
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>認証エラー (401 Unauthorized)</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="alert alert-error">
+                            <strong>🔍 症状:</strong> "Authentication failed" や "401 Unauthorized" エラー
+                        </div>
+                        
+                        <h4>チェック項目:</h4>
+                        <ol>
+                            <li><strong>API Token の確認</strong>
+                                <div class="code-block">
+# .env ファイルの確認（Token は表示されません）
+grep -v API_TOKEN .env
+<button class="copy-button" onclick="copyToClipboard('grep -v API_TOKEN .env')">コピー</button>
+                                </div>
+                            </li>
+                            <li><strong>メールアドレスの確認</strong>
+                                <p>Jira にログインする際のメールアドレスと一致しているか確認</p>
+                            </li>
+                            <li><strong>API Token の有効性確認</strong>
+                                <p>curl コマンドで直接テスト:</p>
+                                <div class="code-block">
+curl -u "your-email@example.com:YOUR_API_TOKEN" \
+  "https://your-domain.atlassian.net/rest/api/3/myself"
+<button class="copy-button" onclick="copyToClipboard('curl -u \"your-email@example.com:YOUR_API_TOKEN\" \"https://your-domain.atlassian.net/rest/api/3/myself\"')">コピー</button>
+                                </div>
+                            </li>
+                        </ol>
+
+                        <h4>解決方法:</h4>
+                        <ul>
+                            <li>新しい API Token を作成して置き換える</li>
+                            <li>.env ファイルの設定値を再確認</li>
+                            <li>スペースや改行文字が入っていないか確認</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>サーバー起動エラー</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="alert alert-error">
+                            <strong>🔍 症状:</strong> "adk web" コマンドが失敗する
+                        </div>
+
+                        <h4>チェック項目:</h4>
+                        <ol>
+                            <li><strong>仮想環境の確認</strong>
+                                <div class="code-block">
+# 仮想環境がアクティブか確認
+which python
+# 期待する結果: .venv/bin/python のパスが表示される
+<button class="copy-button" onclick="copyToClipboard('which python')">コピー</button>
+                                </div>
+                            </li>
+                            <li><strong>依存関係の確認</strong>
+                                <div class="code-block">
+# ADK がインストールされているか確認
+pip show google-adk
+<button class="copy-button" onclick="copyToClipboard('pip show google-adk')">コピー</button>
+                                </div>
+                            </li>
+                            <li><strong>ポートの確認</strong>
+                                <div class="code-block">
+# ポート 8000 が使用されているか確認
+lsof -i :8000
+<button class="copy-button" onclick="copyToClipboard('lsof -i :8000')">コピー</button>
+                                </div>
+                            </li>
+                        </ol>
+
+                        <h4>解決方法:</h4>
+                        <ul>
+                            <li>仮想環境を再アクティベート: <code>source .venv/bin/activate</code></li>
+                            <li>依存関係を再インストール: <code>uv sync --all-extras</code></li>
+                            <li>別のポートを使用: <code>adk web --port 8001 jira_remote_mcp_apikey_agent/</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>接続タイムアウトエラー</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="alert alert-error">
+                            <strong>🔍 症状:</strong> "Connection timeout" や "Request timeout" エラー
+                        </div>
+
+                        <h4>解決方法:</h4>
+                        <ol>
+                            <li><strong>タイムアウト設定の調整</strong>
+                                <p>.env ファイルに以下を追加:</p>
+                                <div class="code-block">
+JIRA_CONNECTION_TIMEOUT=60
+<button class="copy-button" onclick="copyToClipboard('JIRA_CONNECTION_TIMEOUT=60')">コピー</button>
+                                </div>
+                            </li>
+                            <li><strong>ネットワーク接続の確認</strong>
+                                <div class="code-block">
+# MCP サーバーへの接続確認
+curl -I https://mcp.atlassian.com/v1/sse
+<button class="copy-button" onclick="copyToClipboard('curl -I https://mcp.atlassian.com/v1/sse')">コピー</button>
+                                </div>
+                            </li>
+                            <li><strong>プロキシ設定の確認</strong>
+                                <p>企業ネットワークの場合、プロキシ設定が必要な場合があります</p>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>権限エラー (403 Forbidden)</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="alert alert-error">
+                            <strong>🔍 症状:</strong> "403 Forbidden" や "Permission denied" エラー
+                        </div>
+
+                        <h4>原因と解決方法:</h4>
+                        <ul>
+                            <li><strong>Jira の権限不足</strong> - 管理者に権限の確認を依頼</li>
+                            <li><strong>プロジェクトへのアクセス権なし</strong> - 適切なプロジェクトでテスト</li>
+                            <li><strong>API Token の権限制限</strong> - アカウントの権限設定を確認</li>
+                        </ul>
+
+                        <div class="code-block">
+# 自分の権限を確認
+curl -u "your-email:token" \
+  "https://your-domain.atlassian.net/rest/api/3/mypermissions"
+<button class="copy-button" onclick="copyToClipboard('curl -u \"your-email:token\" \"https://your-domain.atlassian.net/rest/api/3/mypermissions\"')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🛠️ デバッグ方法</h3>
+
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4>ログの確認</h4>
+                        <p>adk web の実行時にログを詳細表示:</p>
+                        <div class="code-block">
+adk web --verbose jira_remote_mcp_apikey_agent/
+<button class="copy-button" onclick="copyToClipboard('adk web --verbose jira_remote_mcp_apikey_agent/')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4>手動での API テスト</h4>
+                        <p>エージェントを使わず、直接 Jira API をテスト:</p>
+                        <div class="code-block">
+# プロジェクト一覧の取得テスト
+curl -u "your-email@example.com:YOUR_API_TOKEN" \
+  -H "Accept: application/json" \
+  "https://your-domain.atlassian.net/rest/api/3/project"
+<button class="copy-button" onclick="copyToClipboard('curl -u \"your-email@example.com:YOUR_API_TOKEN\" -H \"Accept: application/json\" \"https://your-domain.atlassian.net/rest/api/3/project\"')">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>📞 ヘルプとサポート</h3>
+
+                <div class="card">
+                    <h4>🔗 有用なリソース</h4>
+                    <ul>
+                        <li><strong>ADK ドキュメント</strong>: プロジェクトの README.md</li>
+                        <li><strong>Atlassian API ドキュメント</strong>: <a href="https://developer.atlassian.com/cloud/jira/platform/rest/v3/" target="_blank">Jira Cloud REST API</a></li>
+                        <li><strong>MCP 仕様</strong>: <a href="https://modelcontextprotocol.io/" target="_blank">Model Context Protocol</a></li>
+                        <li><strong>Python 環境管理</strong>: <a href="https://docs.astral.sh/uv/" target="_blank">uv ドキュメント</a></li>
+                    </ul>
+                </div>
+
+                <h3>🎯 環境のリセット</h3>
+
+                <div class="expandable">
+                    <div class="expandable-header" onclick="toggleExpandable(this)">
+                        <span><strong>完全に環境をリセットしたい場合</strong></span>
+                        <span class="expandable-arrow">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="alert alert-warning">
+                            <strong>⚠️ 注意:</strong> これらの操作は現在の設定をすべて削除します。
+                        </div>
+
+                        <ol>
+                            <li><strong>仮想環境の削除と再作成</strong>
+                                <div class="code-block">
+# 仮想環境を非アクティブ化
+deactivate
+
+# 仮想環境を削除
+rm -rf .venv
+
+# 仮想環境を再作成
+uv venv --python "python3.11" ".venv"
+source .venv/bin/activate
+uv sync --all-extras
+<button class="copy-button" onclick="copyToClipboard('deactivate\nrm -rf .venv\nuv venv --python \"python3.11\" \".venv\"\nsource .venv/bin/activate\nuv sync --all-extras')">コピー</button>
+                                </div>
+                            </li>
+                            <li><strong>設定ファイルの再作成</strong>
+                                <div class="code-block">
+cd jira_remote_mcp_apikey_agent/
+rm .env
+cp .env.example .env
+# 再度設定を編集
+<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/\nrm .env\ncp .env.example .env')">コピー</button>
+                                </div>
+                            </li>
+                            <li><strong>エージェントコードの復元</strong>
+                                <div class="code-block">
+# バックアップから復元（作成済みの場合）
+cp agent.py.backup agent.py
+<button class="copy-button" onclick="copyToClipboard('cp agent.py.backup agent.py')">コピー</button>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <h3>✅ トラブルシューティング・チェックリスト</h3>
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-trouble-1" class="checkbox">
+                        <label for="check-trouble-1">認証エラーの解決方法を理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-trouble-2" class="checkbox">
+                        <label for="check-trouble-2">サーバー起動エラーの対処法を学んだ</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-trouble-3" class="checkbox">
+                        <label for="check-trouble-3">接続タイムアウトの解決方法を理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-trouble-4" class="checkbox">
+                        <label for="check-trouble-4">権限エラーの原因と対処法を学んだ</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-trouble-5" class="checkbox">
+                        <label for="check-trouble-5">デバッグ方法を理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-trouble-6" class="checkbox">
+                        <label for="check-trouble-6">手動でのAPI テスト方法を試した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-trouble-7" class="checkbox">
+                        <label for="check-trouble-7">有用なリソースを確認した</label>
+                    </div>
+                </div>
+
+                <div class="alert alert-success">
+                    <strong>🎉 お疲れ様でした！</strong> ハンズオンが完了しました。これで ADK と Jira MCP 連携の基礎をマスターできました。今後の開発に活用してください！
+                </div>
+            </section>
+
+            <!-- Navigation Buttons -->
+            <div class="navigation-buttons">
+                <button class="button button-secondary" id="prevButton" onclick="previousSection()">◀ 前へ</button>
+                <button class="button" id="nextButton" onclick="nextSection()">次へ ▶</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navigation state
+        const sections = ['introduction', 'prerequisites', 'api-token', 'configuration', 'execution', 'customization', 'tools', 'troubleshooting'];
+        let currentSection = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            updateNavigation();
+        });
+
+        // Section navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show target section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            
+            // Update current section index
+            currentSection = sections.indexOf(sectionId);
+            updateProgress();
+            updateNavigation();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function nextSection() {
+            if (currentSection < sections.length - 1) {
+                currentSection++;
+                showSection(sections[currentSection]);
+            }
+        }
+
+        function previousSection() {
+            if (currentSection > 0) {
+                currentSection--;
+                showSection(sections[currentSection]);
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentSection + 1) / sections.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateNavigation() {
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
+            
+            prevButton.style.display = currentSection === 0 ? 'none' : 'inline-block';
+            
+            if (currentSection === sections.length - 1) {
+                nextButton.textContent = '完了！ 🎉';
+                nextButton.onclick = function() {
+                    alert('🎉 ハンズオン完了おめでとうございます！\n\nADK と Jira MCP 連携をマスターしました。\n今後の開発に活用してください！');
+                };
+            } else {
+                nextButton.textContent = '次へ ▶';
+                nextButton.onclick = nextSection;
+            }
+        }
+
+        // Navigation item clicks
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                showSection(this.dataset.section);
+            });
+        });
+
+        // Copy to clipboard functionality
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // Show feedback
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'コピー完了！';
+                button.classList.add('copied');
+                
+                setTimeout(function() {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(function(err) {
+                console.error('コピーに失敗しました: ', err);
+                alert('コピーに失敗しました。手動でコピーしてください。');
+            });
+        }
+
+        // Expandable sections
+        function toggleExpandable(header) {
+            const expandable = header.parentElement;
+            expandable.classList.toggle('open');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        previousSection();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        nextSection();
+                        break;
+                }
+            }
+        });
+
+        // Auto-save checkbox states
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+                localStorage.setItem(e.target.id, e.target.checked);
+            }
+        });
+
+        // Restore checkbox states
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                const saved = localStorage.getItem(checkbox.id);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
