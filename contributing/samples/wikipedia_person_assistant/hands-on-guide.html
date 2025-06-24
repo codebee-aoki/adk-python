@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia人物アシスタント - ハンズオンガイド</title>
+    <style>
+        :root {
+            --primary-color: #0052cc;
+            --secondary-color: #ff5722;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --error-color: #f44336;
+            --background-color: #f5f7fa;
+            --surface-color: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #666666;
+            --border-color: #e1e5e9;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #1a1a1a;
+                --surface-color: #2d2d2d;
+                --text-color: #e0e0e0;
+                --text-secondary: #b0b0b0;
+                --border-color: #404040;
+                --shadow: 0 2px 4px rgba(0,0,0,0.3);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        /* PC表示でコードブロックの幅を最大化 */
+        @media (min-width: 769px) {
+            .code-block {
+                width: calc(100% - 2rem);
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+
+        .step-content {
+            width: 100%;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #0066ff);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            background-color: rgba(255,255,255,0.2);
+            height: 4px;
+            margin-top: 1rem;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background-color: var(--success-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .nav {
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            padding: 0.5rem 1rem;
+            background-color: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .section h3 {
+            color: var(--text-color);
+            margin: 2rem 0 1rem 0;
+            font-size: 1.3rem;
+        }
+
+        .section h4 {
+            color: var(--text-color);
+            margin: 1.5rem 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background-color: #e3f2fd;
+            border-color: var(--primary-color);
+            color: #1565c0;
+        }
+
+        .alert-warning {
+            background-color: #fff3e0;
+            border-color: var(--warning-color);
+            color: #ef6c00;
+        }
+
+        .alert-success {
+            background-color: #e8f5e8;
+            border-color: var(--success-color);
+            color: #2e7d32;
+        }
+
+        .alert-error {
+            background-color: #ffebee;
+            border-color: var(--error-color);
+            color: #c62828;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .alert-info {
+                background-color: #1e3a5f;
+                color: #90caf9;
+            }
+            .alert-warning {
+                background-color: #3e2723;
+                color: #ffcc02;
+            }
+            .alert-success {
+                background-color: #1b5e20;
+                color: #a5d6a7;
+            }
+            .alert-error {
+                background-color: #3f1a1a;
+                color: #ef9a9a;
+            }
+        }
+
+        .step {
+            display: flex;
+            margin: 1.5rem 0;
+            gap: 1rem;
+        }
+
+        .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            overflow-x: auto;
+            position: relative;
+            white-space: pre-line;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .code-block {
+                background-color: #2d2d2d;
+                color: #f8f8f2;
+                border-color: #404040;
+            }
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #004099;
+        }
+
+        .copy-button:active {
+            background-color: var(--success-color);
+        }
+
+        .checklist {
+            background-color: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 0.8rem 0;
+        }
+
+        .checkbox {
+            margin-right: 0.8rem;
+            transform: scale(1.2);
+        }
+
+        .file-tree {
+            background-color: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+        }
+
+        .file-tree ul {
+            list-style: none;
+            margin-left: 1rem;
+        }
+
+        .file-tree .folder::before {
+            content: "📁 ";
+        }
+
+        .file-tree .file::before {
+            content: "📄 ";
+        }
+
+        .expandable {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+        }
+
+        .expandable-header {
+            padding: 1rem;
+            background-color: var(--background-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .expandable-header:hover {
+            background-color: var(--border-color);
+        }
+
+        .expandable-content {
+            padding: 1rem;
+            display: none;
+        }
+
+        .expandable-content.expanded {
+            display: block;
+        }
+
+        .expandable-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .expandable.expanded .expandable-arrow {
+            transform: rotate(180deg);
+        }
+
+        .architecture-diagram {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: var(--border-radius);
+            border: 2px dashed var(--border-color);
+        }
+
+        .architecture-diagram img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .architecture-diagram .placeholder {
+            padding: 3rem;
+            background-color: var(--background-color);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .architecture-diagram .placeholder h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .diagram-instructions {
+            background-color: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .learning-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .learning-point {
+            background-color: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .learning-point h4 {
+            color: var(--success-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, var(--primary-color), #0066ff);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 2rem auto;
+            display: block;
+            box-shadow: var(--shadow);
+        }
+
+        .next-button:hover {
+            background: linear-gradient(135deg, #004099, #0052cc);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .next-button:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .section {
+                padding: 1rem;
+            }
+            
+            .nav {
+                padding: 1rem;
+            }
+            
+            .step {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌟 Wikipedia人物アシスタント</h1>
+            <p>ADK マルチエージェント・MCP統合 ハンズオンガイド</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <a href="#overview" class="nav-item active" onclick="showSection('overview')">概要</a>
+            <a href="#setup" class="nav-item" onclick="showSection('setup')">環境構築</a>
+            <a href="#web-demo" class="nav-item" onclick="showSection('web-demo')">Web UI体験</a>
+            <a href="#prompt-testing" class="nav-item" onclick="showSection('prompt-testing')">プロンプト実験</a>
+            <a href="#completion" class="nav-item" onclick="showSection('completion')">完了</a>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Section 1: Overview -->
+            <section class="section" id="overview">
+                <h2>🎯 概要とアーキテクチャ</h2>
+                
+                <div class="alert alert-info">
+                    <strong>🎯 学習目標</strong> ADKのマルチエージェント設計とMCP統合の仕組みを理解し、実際に動作するWikipedia人物検索アシスタントを構築・カスタマイズします。
+                </div>
+
+                <h3>📋 このハンズオンで学べること</h3>
+                <div class="learning-points">
+                    <div class="learning-point">
+                        <h4>🏗️ マルチエージェント設計</h4>
+                        <p>Coordinatorパターンによる自動ルーティングと役割分担の設計手法</p>
+                    </div>
+                    <div class="learning-point">
+                        <h4>🔗 MCP統合</h4>
+                        <p>Wikipedia MCPサーバーとの連携による外部ツール統合の実装</p>
+                    </div>
+                    <div class="learning-point">
+                        <h4>🎨 プロンプトエンジニアリング</h4>
+                        <p>各エージェントの特化した役割設計と効果的な指示文の作成</p>
+                    </div>
+                    <div class="learning-point">
+                        <h4>🐛 デバッグ技法</h4>
+                        <p>マルチエージェントシステムの動作確認とトラブルシューティング</p>
+                    </div>
+                </div>
+
+                <h3>🏛️ システムアーキテクチャ</h3>
+                <div class="architecture-diagram">
+                    <img src="agent_architecture.drawio.png" alt="Wikipedia人物アシスタント構造図" />
+                </div>
+
+                <div class="diagram-instructions">
+                    <h4>🎨 構造図について</h4>
+                    <p>上記の図は <code>agent_architecture.drawio</code> ファイルから生成されており、以下の要素が視覚化されています：</p>
+                    <ul>
+                        <li><strong>ユーザー入力の流れ</strong> - 様々な質問パターンとその分岐</li>
+                        <li><strong>Coordinatorの判定ロジック</strong> - 人物関連かどうかの自動分類</li>
+                        <li><strong>各エージェントの役割</strong> - Greeter/WikipediaPersonAssistantの専門化</li>
+                        <li><strong>MCP統合</strong> - Wikipedia検索ツールとの連携</li>
+                        <li><strong>学習ポイント</strong> - このシステムから学べる設計原則</li>
+                    </ul>
+                    <p><em>図を編集したい場合は <code>README_diagram.md</code> の手順を参照してください。</em></p>
+                </div>
+
+                <h3>🎭 エージェント構成</h3>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>🎯 Coordinator（調整エージェント）</h4>
+                        <p><strong>役割：</strong> ユーザーの質問を分析して適切なエージェントに自動転送</p>
+                        <ul>
+                            <li>質問内容の自動分類（人物関連 vs 一般質問）</li>
+                            <li>適切なエージェントへの自動転送</li>
+                            <li>マルチエージェント全体の制御</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>👋 Greeter（挨拶エージェント）</h4>
+                        <p><strong>役割：</strong> 挨拶・一般会話・システム質問への対応</p>
+                        <ul>
+                            <li>親しみやすい挨拶応答</li>
+                            <li>システム機能の案内</li>
+                            <li>人物検索機能への誘導</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>📚 WikipediaPersonAssistant（人物検索エージェント）</h4>
+                        <p><strong>役割：</strong> 人物に関する詳細情報の検索・提供</p>
+                        <ul>
+                            <li>Wikipedia検索による人物情報取得</li>
+                            <li>詳細な人物要約の作成</li>
+                            <li>曖昧な質問での候補リスト表示</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>⚡ 動作フロー例</h3>
+                <div class="code-block"># 例1: 挨拶<br>ユーザー: "こんにちは"<br>  ↓ Coordinator が分析<br>  ↓ Greeter に転送<br>結果: "こんにちは！歴史上の人物について調べられます..."<br><br># 例2: 具体的人物<br>ユーザー: "夏目漱石について教えて"<br>  ↓ Coordinator が分析<br>  ↓ WikipediaPersonAssistant に転送<br>  ↓ Wikipedia MCP でsearch_wikipedia実行<br>結果: "夏目漱石は1867年生まれの日本の小説家..."<br><br># 例3: 曖昧な質問<br>ユーザー: "江戸時代の画家について知りたい"<br>  ↓ Coordinator が分析<br>  ↓ WikipediaPersonAssistant に転送<br>  ↓ 候補リストを表示<br>結果: "1. 葛飾北斎 2. 歌川広重 3. 円山応挙..."<button class="copy-button" onclick="copyToClipboard('# 例1: 挨拶\nユーザー: \"こんにちは\"\n  ↓ Coordinator が分析\n  ↓ Greeter に転送\n結果: \"こんにちは！歴史上の人物について調べられます...\"\n\n# 例2: 具体的人物\nユーザー: \"夏目漱石について教えて\"\n  ↓ Coordinator が分析\n  ↓ WikipediaPersonAssistant に転送\n  ↓ Wikipedia MCP でsearch_wikipedia実行\n結果: \"夏目漱石は1867年生まれの日本の小説家...\"\n\n# 例3: 曖昧な質問\nユーザー: \"江戸時代の画家について知りたい\"\n  ↓ Coordinator が分析\n  ↓ WikipediaPersonAssistant に転送\n  ↓ 候補リストを表示\n結果: \"1. 葛飾北斎 2. 歌川広重 3. 円山応挙...\"', this)">コピー</button>
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-overview-1" class="checkbox">
+                        <label for="check-overview-1">マルチエージェント構造を理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-overview-2" class="checkbox">
+                        <label for="check-overview-2">Coordinatorパターンの仕組みを把握した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-overview-3" class="checkbox">
+                        <label for="check-overview-3">MCP統合の概念を理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-overview-4" class="checkbox">
+                        <label for="check-overview-4">学習目標を確認した</label>
+                    </div>
+                </div>
+
+                <button class="next-button" onclick="showSection('setup')">次へ：環境構築 →</button>
+            </section>
+
+            <!-- Section 2: Setup -->
+            <section class="section" id="setup">
+                <h2>🛠️ 環境構築</h2>
+                
+                <div class="alert alert-info">
+                    <strong>🎯 目標</strong> contributing/samplesディレクトリでADK Web UIを起動し、Wikipedia人物アシスタントにアクセスできるよう環境を整えます。
+                </div>
+
+                <h3>📋 前提条件の確認</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>基本環境の確認</h4>
+                        <div class="code-block"># ADK Python環境があることを確認<br>python -c "import google.adk; print('ADK is installed')"<br><br># Wikipedia MCPをインストール<br>pip install wikipedia-mcp<button class="copy-button" onclick="copyToClipboard('python -c \"import google.adk; print(\'ADK is installed\')\"\npip install wikipedia-mcp', this)">コピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🔑 API Key設定</h3>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Google API Keyを設定</h4>
+                        <div class="code-block"># contributing/samplesディレクトリに移動<br>cd contributing/samples<br><br># .envファイルでAPI Keyを設定<br>echo "GOOGLE_API_KEY=your_api_key_here" > .env<button class="copy-button" onclick="copyToClipboard('cd contributing/samples\necho \"GOOGLE_API_KEY=your_api_key_here\" > .env', this)">コピー</button>
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>⚠️ 重要</strong> your_api_key_here を実際のGoogle API Keyに置き換えてください。<br>
+                            API Keyは <a href="https://aistudio.google.com/" target="_blank">Google AI Studio</a> から取得できます。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🌐 ADK Web UI起動</h3>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Web UIでWikipedia人物アシスタントを起動</h4>
+                        <div class="code-block"># contributing/samplesディレクトリから実行<br>adk web wikipedia_person_assistant/<button class="copy-button" onclick="copyToClipboard('adk web wikipedia_person_assistant/', this)">コピー</button>
+                        </div>
+                        <p><strong>期待する結果：</strong></p>
+                        <ul>
+                            <li>Web UIが http://localhost:8080 で起動</li>
+                            <li>ブラウザが自動的に開く（または手動でアクセス）</li>
+                            <li>Wikipedia人物アシスタントのチャット画面が表示</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>✅ 動作確認</h3>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>簡単な動作テスト</h4>
+                        <p>Web UIで以下を試して、エージェントが正常に動作することを確認：</p>
+                        <div class="code-block"># Web UIのチャット画面で入力してテスト<br><br>テスト1: "こんにちは"<br>→ Greeterエージェントからの挨拶応答を確認<br><br>テスト2: "夏目漱石について教えて"<br>→ WikipediaPersonAssistantによる詳細情報を確認<button class="copy-button" onclick="copyToClipboard('こんにちは', this)">挨拶をコピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-success">
+                    <strong>🎉 準備完了！</strong> Web UIが正常に動作していれば、次のステップでエージェントとの対話体験を始められます。
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-setup-1" class="checkbox">
+                        <label for="check-setup-1">ADKとWikipedia MCPがインストールされている</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-setup-2" class="checkbox">
+                        <label for="check-setup-2">Google API Keyを.envファイルに設定した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-setup-3" class="checkbox">
+                        <label for="check-setup-3">adk webでWeb UIが起動した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-setup-4" class="checkbox">
+                        <label for="check-setup-4">挨拶と人物質問のテストが成功した</label>
+                    </div>
+                </div>
+
+                <button class="next-button" onclick="showSection('web-demo')">次へ：Web UI体験 →</button>
+            </section>
+
+            <!-- Section 3: Web Demo -->
+            <section class="section" id="web-demo">
+                <h2>🌐 Web UI体験</h2>
+                
+                <div class="alert alert-info">
+                    <strong>🎯 学習目標</strong> ADK Web UIを使って、マルチエージェントシステムの自動ルーティングとMCP統合を実際に体験します。
+                </div>
+
+                <h3>🎭 マルチエージェント動作体験</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Coordinatorによる自動ルーティングを体験</h4>
+                        <p>Web UIで以下の質問を順番に試して、各エージェントへの自動転送を確認します：</p>
+                        <div class="code-block"># Web UIのチャット画面で以下を入力<br><br>【テスト1】Greeterエージェントへの転送<br>"こんにちは"<br>"何ができますか？"<br>"ありがとう"<br><br>【テスト2】WikipediaPersonAssistantへの転送<br>"夏目漱石について教えて"<br>"森鴎外の代表作は？"<br>"坂本龍馬について知りたい"<button class="copy-button" onclick="copyToClipboard('こんにちは\n何ができますか？\n夏目漱石について教えて', this)">テスト質問をコピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🔍 エージェント転送の確認</h3>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>どのエージェントが応答しているかを観察</h4>
+                        <p>Web UIでの応答を見て、以下のパターンを確認してください：</p>
+                        <div class="learning-points">
+                            <div class="learning-point">
+                                <h4>👋 Greeter応答の特徴</h4>
+                                <p>親しみやすい挨拶、機能案内、人物検索への誘導</p>
+                            </div>
+                            <div class="learning-point">
+                                <h4>📚 WikipediaPersonAssistant応答の特徴</h4>
+                                <p>Wikipedia検索実行、詳細な人物情報、出典付きの事実</p>
+                            </div>
+                            <div class="learning-point">
+                                <h4>🎯 自動ルーティングの精度</h4>
+                                <p>質問内容に応じた適切なエージェント選択</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🧪 境界ケースのテスト</h3>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>判定が難しい質問での動作確認</h4>
+                        <p>以下の曖昧な質問を試して、Coordinatorの判定能力を確認：</p>
+                        <div class="code-block"># 境界ケースのテスト質問<br><br>"人について教えて"<br>"有名な人は誰ですか？"<br>"江戸時代について知りたい"<br>"現代の作家について"<br>"ありがとう、漱石について詳しく"<button class="copy-button" onclick="copyToClipboard('人について教えて\n有名な人は誰ですか？\n江戸時代について知りたい', this)">境界ケースをコピー</button>
+                        </div>
+                        <p><strong>観察ポイント：</strong></p>
+                        <ul>
+                            <li>曖昧な質問でもどちらかのエージェントに転送される</li>
+                            <li>人物関連のヒントがあれば WikipediaPersonAssistant に転送</li>
+                            <li>一般的すぎる質問は Greeter が適切に誘導</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>⚡ MCP統合の実感</h3>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Wikipedia検索ツールの動作を確認</h4>
+                        <p>人物に関する質問で、実際にWikipedia MCPツールが呼び出される様子を観察：</p>
+                        <div class="code-block"># Wikipedia MCP動作確認用の質問<br><br>"葛飾北斎の代表作を教えて"<br>"アインシュタインの相対性理論について"<br>"マリ・キュリーの業績は？"<br>"存在しない人物XYZについて"<button class="copy-button" onclick="copyToClipboard('葛飾北斎の代表作を教えて\nアインシュタインの相対性理論について', this)">MCP確認質問をコピー</button>
+                        </div>
+                        <p><strong>確認できること：</strong></p>
+                        <ul>
+                            <li>実際のWikipedia検索が実行される</li>
+                            <li>検索結果に基づいた詳細な回答</li>
+                            <li>検索できない場合の適切な応答</li>
+                            <li>日本語Wikipediaからの正確な情報取得</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert alert-success">
+                    <strong>🎉 体験完了！</strong> マルチエージェントの自動ルーティングとMCP統合の動作を実際に確認できました。次のステップではプロンプトを変更して、さらに詳しく動作を理解していきます。
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-web-1" class="checkbox">
+                        <label for="check-web-1">Greeterエージェントへの自動転送を確認した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-web-2" class="checkbox">
+                        <label for="check-web-2">WikipediaPersonAssistantへの自動転送を確認した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-web-3" class="checkbox">
+                        <label for="check-web-3">境界ケースでの判定動作を観察した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-web-4" class="checkbox">
+                        <label for="check-web-4">Wikipedia MCP統合の動作を確認した</label>
+                    </div>
+                </div>
+
+                <button class="next-button" onclick="showSection('prompt-testing')">次へ：プロンプト実験 →</button>
+            </section>
+
+            <!-- Section 4: Prompt Testing -->
+            <section class="section" id="prompt-testing">
+                <h2>⚗️ プロンプト実験</h2>
+                
+                <div class="alert alert-info">
+                    <strong>🎯 学習目標</strong> エージェントのinstructionを変更して、動作がどのように変わるかを実験し、プロンプトエンジニアリングの効果を体験します。
+                </div>
+
+                <h3>📝 エージェントファイルの確認</h3>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>agent.pyファイルの構造を理解</h4>
+                        <p>現在のエージェント設定を確認しましょう：</p>
+                        <div class="code-block"># agent.pyの内容を確認<br>cat wikipedia_person_assistant/agent.py<button class="copy-button" onclick="copyToClipboard('cat wikipedia_person_assistant/agent.py', this)">コピー</button>
+                        </div>
+                        <p><strong>確認ポイント：</strong></p>
+                        <ul>
+                            <li>Greeterエージェントの instruction（親しみやすい口調）</li>
+                            <li>WikipediaPersonAssistantの instruction（詳細検索）</li>
+                            <li>Coordinatorの instruction（自動振り分けロジック）</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>🎨 プロンプト変更実験</h3>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Greeterエージェントのスタイル変更</h4>
+                        <p>agent.pyファイルを編集して、Greeterの応答スタイルを変更してみます：</p>
+                        <div class="code-block"># エディタでagent.pyを開く<br>nano wikipedia_person_assistant/agent.py<br><br># または<br>code wikipedia_person_assistant/agent.py<button class="copy-button" onclick="copyToClipboard('nano wikipedia_person_assistant/agent.py', this)">コピー</button>
+                        </div>
+                        
+                        <h4>実験パターン例</h4>
+                        <div class="learning-points">
+                            <div class="learning-point">
+                                <h4>📚 学術的スタイル</h4>
+                                <p>「丁寧語で学術的な説明」「正確な用語使用」「出典重視」</p>
+                            </div>
+                            <div class="learning-point">
+                                <h4>😊 カジュアルスタイル</h4>
+                                <p>「親しみやすい口調」「絵文字使用」「分かりやすい例え」</p>
+                    </div>
+                            </div>
+                            <div class="learning-point">
+                                <h4>🎓 教育的スタイル</h4>
+                                <p>「段階的説明」「理解度確認」「関連知識の提供」</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🔄 変更後のテスト</h3>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Web UIで変更効果を確認</h4>
+                        <p>プロンプトを変更した後、Web UIを再起動して効果を確認：</p>
+                        <div class="code-block"># Web UIを停止（Ctrl+C）<br># 再起動<br>adk web wikipedia_person_assistant/<br><br># 同じ質問で応答の変化を確認<br>"こんにちは"<br>"何ができますか？"<button class="copy-button" onclick="copyToClipboard('adk web wikipedia_person_assistant/', this)">コピー</button>
+                        </div>
+                        <p><strong>比較ポイント：</strong></p>
+                        <ul>
+                            <li>口調やトーンの変化</li>
+                            <li>説明の詳しさや構成</li>
+                            <li>ユーザーへの誘導方法</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>⚙️ 高度な実験</h3>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>WikipediaPersonAssistantの検索スタイル変更</h4>
+                        <p>人物検索エージェントの応答形式を変更して、より特化した応答を実験：</p>
+                        <div class="code-block"># 応答形式の例<br><br>## 簡潔版<br>"重要な事実のみを箇条書きで、1-2文で要約"<br><br>## 詳細版<br>"背景情報も含めて説明、関連人物や出来事も紹介"<br><br>## 教育版<br>"なぜ重要な人物なのかを説明、現代への影響も言及"<button class="copy-button" onclick="copyToClipboard('重要な事実のみを箇条書きで、1-2文で要約', this)">簡潔版をコピー</button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>📊 実験結果の比較</h3>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>同じ質問での応答比較</h4>
+                        <p>以下の質問で、プロンプト変更前後の応答を比較してみましょう：</p>
+                        <div class="code-block"># 比較テスト用の質問<br><br>"夏目漱石について教えて"<br>"こんにちは、何ができますか？"<br>"江戸時代の画家について知りたい"<br>"ありがとうございました"<button class="copy-button" onclick="copyToClipboard('夏目漱石について教えて\nこんにちは、何ができますか？', this)">比較質問をコピー</button>
+                        </div>
+                        <p><strong>観察ポイント：</strong></p>
+                        <ul>
+                            <li>応答の長さと詳細度</li>
+                            <li>専門用語の使い方</li>
+                            <li>ユーザーとの親しみやすさ</li>
+                            <li>情報の構成と提示方法</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert alert-success">
+                    <strong>🎉 実験完了！</strong> プロンプトエンジニアリングによって、同じシステムでも全く異なる応答スタイルを実現できることを体験しました。これがAIエージェント開発の面白さです！
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prompt-1" class="checkbox">
+                        <label for="check-prompt-1">agent.pyファイルの構造を理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prompt-2" class="checkbox">
+                        <label for="check-prompt-2">Greeterエージェントのスタイルを変更した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prompt-3" class="checkbox">
+                        <label for="check-prompt-3">Web UIで変更効果を確認した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prompt-4" class="checkbox">
+                        <label for="check-prompt-4">WikipediaPersonAssistantの応答形式を実験した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-prompt-5" class="checkbox">
+                        <label for="check-prompt-5">プロンプト変更前後の効果を比較した</label>
+                    </div>
+                </div>
+
+                <button class="next-button" onclick="showSection('completion')">次へ：完了 →</button>
+            </section>
+
+            <!-- Completion -->
+            <section class="section" id="completion">
+                <h2>🎉 ハンズオン完了</h2>
+                
+                <div class="alert alert-success">
+                    <strong>🎯 おめでとうございます！</strong> Wikipedia人物アシスタントのハンズオンを完了しました。
+                </div>
+
+                <h3>📚 学習した内容の振り返り</h3>
+                <div class="learning-points">
+                    <div class="learning-point">
+                        <h4>🏗️ マルチエージェント設計</h4>
+                        <p>Coordinatorパターンによる自動ルーティングと各エージェントの役割分担</p>
+                    </div>
+                    <div class="learning-point">
+                        <h4>🔗 MCP統合</h4>
+                        <p>Wikipedia MCPサーバーとの連携による外部ツール統合の実装</p>
+                    </div>
+                    <div class="learning-point">
+                        <h4>🌐 ADK Web UI</h4>
+                        <p>ブラウザベースの直感的なエージェント操作と実時間での動作確認</p>
+                    </div>
+                    <div class="learning-point">
+                        <h4>⚗️ プロンプトエンジニアリング</h4>
+                        <p>instructionの変更による応答スタイルのカスタマイズと効果測定</p>
+                    </div>
+                </div>
+
+                <h3>🚀 次のステップ</h3>
+                <ul>
+                    <li><strong>応用開発：</strong> 他の分野（科学、芸術など）への特化エージェント作成</li>
+                    <li><strong>機能拡張：</strong> Web検索、ファイル操作などの追加MCPツール統合</li>
+                    <li><strong>本格運用：</strong> FastAPI、Docker、Cloud Runでの本格デプロイ</li>
+                    <li><strong>評価・改善：</strong> ADK評価フレームワークでの品質測定</li>
+                </ul>
+
+                <div class="alert alert-info">
+                    <strong>💡 継続学習のリソース</strong>
+                    <ul>
+                        <li><a href="https://google.github.io/adk-docs/" target="_blank">ADK公式ドキュメント</a> - より高度な機能とパターン</li>
+                        <li><a href="https://modelcontextprotocol.io/" target="_blank">MCP公式サイト</a> - 新しいMCPツールの発見</li>
+                        <li><a href="https://github.com/google/adk-python" target="_blank">ADK GitHubリポジトリ</a> - 最新のサンプルとアップデート</li>
+                    </ul>
+                </div>
+
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-final-1" class="checkbox">
+                        <label for="check-final-1">全セクションを完了した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-final-2" class="checkbox">
+                        <label for="check-final-2">マルチエージェントシステムを理解した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-final-3" class="checkbox">
+                        <label for="check-final-3">プロンプト実験を実践した</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check-final-4" class="checkbox">
+                        <label for="check-final-4">次のステップを計画した</label>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Progress tracking
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const checkedBoxes = document.querySelectorAll('.checkbox:checked');
+            const progress = (checkedBoxes.length / checkboxes.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Section navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show target section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Update navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.remove('active');
+
+            // Activate correct nav item
+            const targetNav = document.querySelector(`a[href="#${sectionId}"]`);
+            if (targetNav) {
+                targetNav.classList.add('active');
+            }
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Expandable sections
+        function toggleExpandable(header) {
+            const expandable = header.parentElement;
+            const content = expandable.querySelector('.expandable-content');
+            const arrow = header.querySelector('.expandable-arrow');
+
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                expandable.classList.remove('expanded');
+                content.style.display = 'none';
+            } else {
+                content.classList.add('expanded');
+                expandable.classList.add('expanded');
+                content.style.display = 'block';
+            }
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text, button) {
+            // Remove the copy button text from the content
+            const cleanText = text.replace(/コピー$/, '').trim();
+            
+            navigator.clipboard.writeText(cleanText).then(function() {
+                const originalText = button.textContent;
+                button.textContent = 'コピー完了！';
+                button.style.backgroundColor = 'var(--success-color)';
+                
+                setTimeout(function() {
+                    button.textContent = originalText;
+                    button.style.backgroundColor = 'var(--primary-color)';
+                }, 2000);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show first section by default
+            showSection('overview');
+
+            // Add progress tracking to all checkboxes
+            const checkboxes = document.querySelectorAll('.checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateProgress);
+            });
+
+            // Initial progress update
+            updateProgress();
+
+            // Auto-save checkbox state to localStorage
+            checkboxes.forEach(checkbox => {
+                const savedState = localStorage.getItem(checkbox.id);
+                if (savedState === 'true') {
+                    checkbox.checked = true;
+                }
+
+                checkbox.addEventListener('change', function() {
+                    localStorage.setItem(this.id, this.checked);
+                });
+            });
+
+            // Update progress after loading saved states
+            updateProgress();
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        showSection('overview');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        showSection('setup');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        showSection('web-demo');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        showSection('prompt-testing');
+                        break;
+                    case '5':
+                        e.preventDefault();
+                        showSection('completion');
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

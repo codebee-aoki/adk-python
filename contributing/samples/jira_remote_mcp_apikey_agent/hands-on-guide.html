@@ -54,6 +54,19 @@
             overflow: hidden;
         }
 
+        /* PC表示でコードブロックの幅を最大化 */
+        @media (min-width: 769px) {
+            .code-block {
+                width: calc(100% - 2rem);
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+
+        .step-content {
+            width: 100%;
+        }
+
         .header {
             background: linear-gradient(135deg, var(--primary-color), #0066ff);
             color: white;
@@ -205,12 +218,19 @@
             background-color: #f8f9fa;
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            padding: 1rem;
+            padding: 0.75rem 1rem;
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             font-size: 0.9rem;
             overflow-x: auto;
             position: relative;
             margin: 1rem 0;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            white-space: pre;
+            line-height: 1.3;
+            min-height: auto;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -510,12 +530,12 @@
                 <h3>🐍 Python 環境の確認</h3>
                 <div class="step">
                     <div class="step-number">1</div>
-                    <div>
+                    <div class="step-content">
                         <h4>Python 3.11 以上の確認</h4>
                         <p>以下のコマンドを実行して Python のバージョンを確認してください：</p>
                         <div class="code-block">
 python --version
-<button class="copy-button" onclick="copyToClipboard('python --version')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('python --version', this)">コピー</button>
                         </div>
                         <p><strong>期待する結果：</strong> Python 3.11.x 以上が表示される</p>
                     </div>
@@ -524,7 +544,7 @@ python --version
                 <h3>📦 uv のインストール</h3>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <div>
+                    <div class="step-content">
                         <h4>uv（高速 Python パッケージマネージャー）のインストール</h4>
                         <p>ADK では依存関係管理に uv を使用します。以下のコマンドでインストールしてください：</p>
                         
@@ -536,7 +556,7 @@ python --version
                             <div class="expandable-content">
                                 <div class="code-block">
 curl -LsSf https://astral.sh/uv/install.sh | sh
-<button class="copy-button" onclick="copyToClipboard('curl -LsSf https://astral.sh/uv/install.sh | sh')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('curl -LsSf https://astral.sh/uv/install.sh | sh', this)">コピー</button>
                                 </div>
                             </div>
                         </div>
@@ -549,7 +569,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
                             <div class="expandable-content">
                                 <div class="code-block">
 powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-<button class="copy-button" onclick="copyToClipboard('powershell -c \"irm https://astral.sh/uv/install.ps1 | iex\"')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('powershell -c \"irm https://astral.sh/uv/install.ps1 | iex\"', this)">コピー</button>
                                 </div>
                             </div>
                         </div>
@@ -559,7 +579,7 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 source ~/.bashrc
 # または
 source ~/.zshrc
-<button class="copy-button" onclick="copyToClipboard('source ~/.bashrc')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('source ~/.bashrc\n# または\nsource ~/.zshrc', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -567,24 +587,24 @@ source ~/.zshrc
                 <h3>🔧 開発環境のセットアップ</h3>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <div>
+                    <div class="step-content">
                         <h4>プロジェクトディレクトリへの移動</h4>
                         <p>まず、contributing/samples ディレクトリに移動しましょう：</p>
                         <div class="code-block">
 cd contributing/samples
-<button class="copy-button" onclick="copyToClipboard('cd contributing/samples')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cd contributing/samples', this)">コピー</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-number">4</div>
-                    <div>
+                    <div class="step-content">
                         <h4>仮想環境の作成とアクティベート</h4>
                         <p>プロジェクト用の Python 仮想環境を作成します：</p>
                         <div class="code-block">
 uv venv --python "python3.11" ".venv"
-<button class="copy-button" onclick="copyToClipboard('uv venv --python \"python3.11\" \".venv\"')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('uv venv --python \"python3.11\" \".venv\"', this)">コピー</button>
                         </div>
                         
                         <p>仮想環境をアクティベートします：</p>
@@ -597,7 +617,7 @@ uv venv --python "python3.11" ".venv"
                             <div class="expandable-content">
                                 <div class="code-block">
 source .venv/bin/activate
-<button class="copy-button" onclick="copyToClipboard('source .venv/bin/activate')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('source .venv/bin/activate', this)">コピー</button>
                                 </div>
                             </div>
                         </div>
@@ -610,7 +630,7 @@ source .venv/bin/activate
                             <div class="expandable-content">
                                 <div class="code-block">
 source .venv/Scripts/activate
-<button class="copy-button" onclick="copyToClipboard('source .venv/Scripts/activate')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('source .venv/Scripts/activate', this)">コピー</button>
                                 </div>
                             </div>
                         </div>
@@ -619,13 +639,13 @@ source .venv/Scripts/activate
 
                 <div class="step">
                     <div class="step-number">5</div>
-                    <div>
+                    <div class="step-content">
                         <h4>依存関係のインストール</h4>
                         <p>ADK とすべての依存関係をインストールします：</p>
                         <div class="code-block">
 cd ../../  # adk-python のルートディレクトリに移動
 uv sync --all-extras
-<button class="copy-button" onclick="copyToClipboard('cd ../../\nuv sync --all-extras')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cd ../../  # adk-python のルートディレクトリに移動\nuv sync --all-extras', this)">コピー</button>
                         </div>
                         <div class="alert alert-info">
                             <strong>💡 Tip:</strong> <code>--all-extras</code> オプションにより、MCP サポートを含むすべての機能がインストールされます。
@@ -636,12 +656,12 @@ uv sync --all-extras
                 <h3>✅ インストール確認</h3>
                 <div class="step">
                     <div class="step-number">6</div>
-                    <div>
+                    <div class="step-content">
                         <h4>ADK コマンドの動作確認</h4>
                         <p>正常にインストールされたか確認しましょう：</p>
                         <div class="code-block">
 adk --help
-<button class="copy-button" onclick="copyToClipboard('adk --help')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('adk --help', this)">コピー</button>
                         </div>
                         <p><strong>期待する結果：</strong> ADK のヘルプメッセージが表示される</p>
                     </div>
@@ -690,12 +710,12 @@ adk --help
 
                 <div class="step">
                     <div class="step-number">1</div>
-                    <div>
+                    <div class="step-content">
                         <h4>Atlassian API Token 管理ページにアクセス</h4>
                         <p>以下のリンクをクリックして、Atlassian の API Token 管理ページを開いてください：</p>
                         <div class="code-block">
 https://id.atlassian.com/manage-profile/security/api-tokens
-<button class="copy-button" onclick="copyToClipboard('https://id.atlassian.com/manage-profile/security/api-tokens')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('https://id.atlassian.com/manage-profile/security/api-tokens', this)">コピー</button>
                         </div>
                         <p><a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" class="button">🔗 API Token 管理ページを開く</a></p>
                     </div>
@@ -703,7 +723,7 @@ https://id.atlassian.com/manage-profile/security/api-tokens
 
                 <div class="step">
                     <div class="step-number">2</div>
-                    <div>
+                    <div class="step-content">
                         <h4>Atlassian アカウントにログイン</h4>
                         <p>お使いの Atlassian アカウント（Jira にアクセスする際のメールアドレス）でログインしてください。</p>
                         <div class="alert alert-info">
@@ -714,7 +734,7 @@ https://id.atlassian.com/manage-profile/security/api-tokens
 
                 <div class="step">
                     <div class="step-number">3</div>
-                    <div>
+                    <div class="step-content">
                         <h4>API Token を作成</h4>
                         <p>「<strong>Create API token</strong>」ボタンをクリックしてください。</p>
                         <div class="alert alert-info">
@@ -725,12 +745,12 @@ https://id.atlassian.com/manage-profile/security/api-tokens
 
                 <div class="step">
                     <div class="step-number">4</div>
-                    <div>
+                    <div class="step-content">
                         <h4>Token に名前を付ける</h4>
                         <p>わかりやすい名前を入力してください。推奨：</p>
                         <div class="code-block">
 ADK-Jira-MCP-Integration
-<button class="copy-button" onclick="copyToClipboard('ADK-Jira-MCP-Integration')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('ADK-Jira-MCP-Integration', this)">コピー</button>
                         </div>
                         <p>「<strong>Create</strong>」をクリックして Token を生成します。</p>
                     </div>
@@ -738,7 +758,7 @@ ADK-Jira-MCP-Integration
 
                 <div class="step">
                     <div class="step-number">5</div>
-                    <div>
+                    <div class="step-content">
                         <h4>⚠️ 重要：Token を即座にコピー</h4>
                         <div class="alert alert-error">
                             <strong>🚨 緊急事項</strong> 生成された API Token は<strong>一度しか表示されません</strong>。必ず今すぐコピーして安全な場所に保存してください！
@@ -767,7 +787,7 @@ your-email@example.com
 
 # 3. API Token（例 - 実際のものは異なります）
 ATATT3xFfGF0T...（長い文字列）
-<button class="copy-button" onclick="copyToClipboard('# 控えた情報をここに記録\n# 1. Jira ドメイン:\n# 2. メールアドレス:\n# 3. API Token:')">テンプレートをコピー</button>
+<button class="copy-button" onclick="copyToClipboard('# 控えた情報をここに記録\n# 1. Jira ドメイン:\n# 2. メールアドレス:\n# 3. API Token:', this)">テンプレートをコピー</button>
                     </div>
                 </div>
 
@@ -835,13 +855,13 @@ ATATT3xFfGF0T...（長い文字列）
                 <h3>📂 ディレクトリ構造の確認</h3>
                 <div class="step">
                     <div class="step-number">1</div>
-                    <div>
+                    <div class="step-content">
                         <h4>正しいディレクトリにいることを確認</h4>
                         <p>まず、contributing/samples ディレクトリにいることを確認しましょう：</p>
                         <div class="code-block">
 pwd
 ls jira_remote_mcp_apikey_agent/
-<button class="copy-button" onclick="copyToClipboard('pwd\nls jira_remote_mcp_apikey_agent/')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('pwd\nls jira_remote_mcp_apikey_agent/', this)">コピー</button>
                         </div>
                         <p><strong>期待する結果：</strong> jira_remote_mcp_apikey_agent ディレクトリが存在し、以下のファイルが表示される</p>
                         <div class="file-tree">
@@ -863,30 +883,30 @@ ls jira_remote_mcp_apikey_agent/
                 <h3>⚙️ 環境設定ファイルの作成</h3>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <div>
+                    <div class="step-content">
                         <h4>jira_remote_mcp_apikey_agent ディレクトリに移動</h4>
                         <div class="code-block">
 cd jira_remote_mcp_apikey_agent/
-<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/', this)">コピー</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-number">3</div>
-                    <div>
+                    <div class="step-content">
                         <h4>.env ファイルを作成</h4>
                         <p>テンプレートファイルをコピーして設定ファイルを作成します：</p>
                         <div class="code-block">
 cp .env.example .env
-<button class="copy-button" onclick="copyToClipboard('cp .env.example .env')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cp .env.example .env', this)">コピー</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-number">4</div>
-                    <div>
+                    <div class="step-content">
                         <h4>.env ファイルを編集</h4>
                         <p>お好みのエディタで .env ファイルを開いて編集してください：</p>
                         
@@ -898,7 +918,7 @@ cp .env.example .env
                             <div class="expandable-content">
                                 <div class="code-block">
 code .env
-<button class="copy-button" onclick="copyToClipboard('code .env')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('code .env', this)">コピー</button>
                                 </div>
                             </div>
                         </div>
@@ -911,7 +931,7 @@ code .env
                             <div class="expandable-content">
                                 <div class="code-block">
 nano .env
-<button class="copy-button" onclick="copyToClipboard('nano .env')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('nano .env', this)">コピー</button>
                                 </div>
                             </div>
                         </div>
@@ -924,7 +944,7 @@ nano .env
                             <div class="expandable-content">
                                 <div class="code-block">
 vim .env
-<button class="copy-button" onclick="copyToClipboard('vim .env')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('vim .env', this)">コピー</button>
                                 </div>
                             </div>
                         </div>
@@ -934,7 +954,7 @@ vim .env
                 <h3>✏️ 設定値の入力</h3>
                 <div class="step">
                     <div class="step-number">5</div>
-                    <div>
+                    <div class="step-content">
                         <h4>実際の値に置き換える</h4>
                         <p>前のセクションで控えた情報を使用して、以下のように設定してください：</p>
                         
@@ -953,7 +973,7 @@ JIRA_API_TOKEN=ATATT3xFfGF0T...（実際のToken）
 # オプション（通常は変更不要）
 # JIRA_MCP_SERVER_URL=https://mcp.atlassian.com/v1/sse
 # JIRA_CONNECTION_TIMEOUT=30
-<button class="copy-button" onclick="copyToClipboard('# 設定テンプレート\nJIRA_DOMAIN=your-company.atlassian.net\nJIRA_EMAIL=your-email@example.com\nJIRA_API_TOKEN=your-api-token-here')">テンプレートをコピー</button>
+<button class="copy-button" onclick="copyToClipboard('# 設定テンプレート\nJIRA_DOMAIN=your-company.atlassian.net\nJIRA_EMAIL=your-email@example.com\nJIRA_API_TOKEN=your-api-token-here', this)">テンプレートをコピー</button>
                             </div>
                         </div>
 
@@ -972,7 +992,7 @@ JIRA_API_TOKEN=ATATT3xFfGF0T...（実際のToken）
                 <h3>💾 設定の保存と確認</h3>
                 <div class="step">
                     <div class="step-number">6</div>
-                    <div>
+                    <div class="step-content">
                         <h4>ファイルを保存</h4>
                         <p>エディタで変更を保存してください：</p>
                         <ul>
@@ -985,12 +1005,12 @@ JIRA_API_TOKEN=ATATT3xFfGF0T...（実際のToken）
 
                 <div class="step">
                     <div class="step-number">7</div>
-                    <div>
+                    <div class="step-content">
                         <h4>設定内容の確認</h4>
                         <p>正しく設定されているか確認しましょう：</p>
                         <div class="code-block">
 cat .env
-<button class="copy-button" onclick="copyToClipboard('cat .env')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cat .env', this)">コピー</button>
                         </div>
                         <p><strong>期待する結果:</strong> あなたの実際の情報が表示される（Token は一部のみ表示されます）</p>
                     </div>
@@ -1008,12 +1028,12 @@ cat .env
 
                 <div class="step">
                     <div class="step-number">8</div>
-                    <div>
+                    <div class="step-content">
                         <h4>.gitignore の確認</h4>
                         <p>.env ファイルが Git 管理対象外になっているか確認：</p>
                         <div class="code-block">
 git status
-<button class="copy-button" onclick="copyToClipboard('git status')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('git status', this)">コピー</button>
                         </div>
                         <p><strong>期待する結果:</strong> .env ファイルが「Untracked files」に表示されない</p>
                     </div>
@@ -1062,13 +1082,13 @@ git status
                 <h3>🚀 ADK Web インターフェースの起動</h3>
                 <div class="step">
                     <div class="step-number">1</div>
-                    <div>
+                    <div class="step-content">
                         <h4>contributing/samples ディレクトリに戻る</h4>
                         <p>エージェントディレクトリの親ディレクトリに移動します：</p>
                         <div class="code-block">
 cd ..
 pwd
-<button class="copy-button" onclick="copyToClipboard('cd ..\npwd')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cd ..\npwd', this)">コピー</button>
                         </div>
                         <p><strong>期待する結果:</strong> .../contributing/samples が表示される</p>
                     </div>
@@ -1076,12 +1096,12 @@ pwd
 
                 <div class="step">
                     <div class="step-number">2</div>
-                    <div>
+                    <div class="step-content">
                         <h4>ADK Web サーバーを起動</h4>
                         <p>以下のコマンドでエージェントを起動します：</p>
                         <div class="code-block">
 adk web jira_remote_mcp_apikey_agent/
-<button class="copy-button" onclick="copyToClipboard('adk web jira_remote_mcp_apikey_agent/')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('adk web jira_remote_mcp_apikey_agent/', this)">コピー</button>
                         </div>
                         
                         <div class="alert alert-info">
@@ -1096,12 +1116,12 @@ Open your browser and navigate to the URL above</pre>
 
                 <div class="step">
                     <div class="step-number">3</div>
-                    <div>
+                    <div class="step-content">
                         <h4>ブラウザでアクセス</h4>
                         <p>以下の URL をブラウザで開いてください：</p>
                         <div class="code-block">
 http://localhost:8000
-<button class="copy-button" onclick="copyToClipboard('http://localhost:8000')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('http://localhost:8000', this)">コピー</button>
                         </div>
                         <p><a href="http://localhost:8000" target="_blank" class="button">🌐 ADK Web インターフェースを開く</a></p>
                     </div>
@@ -1110,7 +1130,7 @@ http://localhost:8000
                 <h3>🌟 初回動作確認</h3>
                 <div class="step">
                     <div class="step-number">4</div>
-                    <div>
+                    <div class="step-content">
                         <h4>エージェントの読み込み確認</h4>
                         <p>ブラウザで以下が表示されることを確認してください：</p>
                         <ul>
@@ -1123,12 +1143,12 @@ http://localhost:8000
 
                 <div class="step">
                     <div class="step-number">5</div>
-                    <div>
+                    <div class="step-content">
                         <h4>簡単な動作テスト</h4>
                         <p>チャット欄に以下のメッセージを入力して送信してください：</p>
                         <div class="code-block">
 こんにちは！あなたは何ができますか？
-<button class="copy-button" onclick="copyToClipboard('こんにちは！あなたは何ができますか？')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('こんにちは！あなたは何ができますか？', this)">コピー</button>
                         </div>
                         <p><strong>期待する結果:</strong> エージェントが自己紹介と利用可能な機能について返答する</p>
                     </div>
@@ -1137,7 +1157,7 @@ http://localhost:8000
                 <h3>🔍 Jira 接続テスト</h3>
                 <div class="step">
                     <div class="step-number">6</div>
-                    <div>
+                    <div class="step-content">
                         <h4>基本的な Jira 操作をテスト</h4>
                         <p>以下のような質問を試してみましょう：</p>
                         
@@ -1145,15 +1165,15 @@ http://localhost:8000
                             <h4>🧪 テスト用クエリの例</h4>
                             <div class="code-block">
 プロジェクト一覧を表示してください
-<button class="copy-button" onclick="copyToClipboard('プロジェクト一覧を表示してください')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('プロジェクト一覧を表示してください', this)">コピー</button>
                             </div>
                             <div class="code-block">
 私に割り当てられている課題を教えてください
-<button class="copy-button" onclick="copyToClipboard('私に割り当てられている課題を教えてください')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('私に割り当てられている課題を教えてください', this)">コピー</button>
                             </div>
                             <div class="code-block">
 最近作成された課題を5件表示してください
-<button class="copy-button" onclick="copyToClipboard('最近作成された課題を5件表示してください')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('最近作成された課題を5件表示してください', this)">コピー</button>
                             </div>
                         </div>
                     </div>
@@ -1180,7 +1200,7 @@ which python
 
 # ポート使用状況の確認
 lsof -i :8000
-<button class="copy-button" onclick="copyToClipboard('which python\nlsof -i :8000')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# 仮想環境の確認\nwhich python\n\n# ポート使用状況の確認\nlsof -i :8000', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1203,7 +1223,7 @@ lsof -i :8000
                         <div class="code-block">
 # 設定確認
 cat .env | grep -v API_TOKEN
-<button class="copy-button" onclick="copyToClipboard('cat .env | grep -v API_TOKEN')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# 設定確認\ncat .env | grep -v API_TOKEN', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1226,12 +1246,12 @@ cat .env | grep -v API_TOKEN
                 <h3>⏹️ サーバーの停止</h3>
                 <div class="step">
                     <div class="step-number">7</div>
-                    <div>
+                    <div class="step-content">
                         <h4>作業終了時の停止方法</h4>
                         <p>ターミナルで以下のキーを押してサーバーを停止できます：</p>
                         <div class="code-block">
 Ctrl + C
-<button class="copy-button" onclick="copyToClipboard('Ctrl + C')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('Ctrl + C', this)">コピー</button>
                         </div>
                         <div class="alert alert-info">
                             <strong>💡 Tip:</strong> サーバーを停止すると、ブラウザでのアクセスができなくなります。再度起動するには <code>adk web</code> コマンドを実行してください。
@@ -1278,13 +1298,13 @@ Ctrl + C
                 <h3>📖 エージェントコードの理解</h3>
                 <div class="step">
                     <div class="step-number">1</div>
-                    <div>
+                    <div class="step-content">
                         <h4>agent.py ファイルを確認</h4>
                         <p>まず、現在のエージェントの設定を確認しましょう：</p>
                         <div class="code-block">
 cd jira_remote_mcp_apikey_agent/
 cat agent.py
-<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/\ncat agent.py')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/\ncat agent.py', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1292,24 +1312,24 @@ cat agent.py
                 <h3>✏️ プロンプトの改変実習</h3>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <div>
+                    <div class="step-content">
                         <h4>agent.py をバックアップ</h4>
                         <p>元のファイルを保存しておきましょう：</p>
                         <div class="code-block">
 cp agent.py agent.py.backup
-<button class="copy-button" onclick="copyToClipboard('cp agent.py agent.py.backup')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cp agent.py agent.py.backup', this)">コピー</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-number">3</div>
-                    <div>
+                    <div class="step-content">
                         <h4>プロンプトの変更</h4>
                         <p>agent.py ファイルを編集して、instruction 部分を変更してみましょう：</p>
                         <div class="code-block">
 code agent.py
-<button class="copy-button" onclick="copyToClipboard('code agent.py')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('code agent.py', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1340,7 +1360,7 @@ instruction=f"""
 いつでも気軽に話しかけてくださいね！ 
 何か困ったことがあれば、詳しく教えてください。一緒に解決しましょう！ 💪
 """,
-<button class="copy-button" onclick="copyToClipboard('instruction=f\"\"\"\nあなたは {config.jira_domain} の親しみやすい Jira アシスタント「ジラちゃん」です！ 😊\n以下のような作業で皆さんをサポートします：\n\n🎯 課題管理のお手伝い：\n- 新しい課題の作成\n- 既存課題の更新と管理\n- 課題の検索とフィルタリング\n\n📊 プロジェクト分析：\n- プロジェクトの進捗状況の分析\n- チームのワークロード確認\n- 期限が近い課題の確認\n\n🔍 JQL クエリのサポート：\n- 複雑な検索条件の構築\n- カスタムレポートの作成\n\nいつでも気軽に話しかけてくださいね！ \n何か困ったことがあれば、詳しく教えてください。一緒に解決しましょう！ 💪\n\"\"\",')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('instruction=f\"\"\"\nあなたは {config.jira_domain} の親しみやすい Jira アシスタント「ジラちゃん」です！ 😊\n以下のような作業で皆さんをサポートします：\n\n🎯 課題管理のお手伝い：\n- 新しい課題の作成\n- 既存課題の更新と管理\n- 課題の検索とフィルタリング\n\n📊 プロジェクト分析：\n- プロジェクトの進捗状況の分析\n- チームのワークロード確認\n- 期限が近い課題の確認\n\n🔍 JQL クエリのサポート：\n- 複雑な検索条件の構築\n- カスタムレポートの作成\n\nいつでも気軽に話しかけてくださいね！ \n何か困ったことがあれば、詳しく教えてください。一緒に解決しましょう！ 💪\n\"\"\",', this)">コピー</button>
                     </div>
                 </div>
 
@@ -1377,14 +1397,14 @@ instruction=f"""
 具体的な要件をお聞かせください。
 最適なソリューションを提案いたします。
 """,
-<button class="copy-button" onclick="copyToClipboard('instruction=f\"\"\"\nあなたは {config.jira_domain} の技術チーム専用 Jira アシスタントです。\nソフトウェア開発プロジェクトの管理に特化した支援を提供します。\n\n## 主要機能：\n\n### バグ管理：\n- バグレポートの作成と優先度設定\n- バグの再現手順の整理\n- 修正状況の追跡とレポート\n\n### 開発タスク管理：\n- ユーザーストーリーとタスクの作成\n- スプリント計画のサポート\n- 開発進捗の可視化\n\n### 技術的分析：\n- コードレビュー課題の管理\n- 技術債務の追跡\n- パフォーマンス課題の分析\n\n### 自動化支援：\n- 定期的なレポート生成\n- 課題のバッチ更新\n- カスタム JQL クエリの構築\n\n技術的な質問や複雑な課題管理のご相談があれば、\n具体的な要件をお聞かせください。\n最適なソリューションを提案いたします。\n\"\"\",')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('instruction=f\"\"\"\nあなたは {config.jira_domain} の技術チーム専用 Jira アシスタントです。\nソフトウェア開発プロジェクトの管理に特化した支援を提供します。\n\n## 主要機能：\n\n### バグ管理：\n- バグレポートの作成と優先度設定\n- バグの再現手順の整理\n- 修正状況の追跡とレポート\n\n### 開発タスク管理：\n- ユーザーストーリーとタスクの作成\n- スプリント計画のサポート\n- 開発進捗の可視化\n\n### 技術的分析：\n- コードレビュー課題の管理\n- 技術債務の追跡\n- パフォーマンス課題の分析\n\n### 自動化支援：\n- 定期的なレポート生成\n- 課題のバッチ更新\n- カスタム JQL クエリの構築\n\n技術的な質問や複雑な課題管理のご相談があれば、\n具体的な要件をお聞かせください。\n最適なソリューションを提案いたします。\n\"\"\",', this)">コピー</button>
                     </div>
                 </div>
 
                 <h3>🔄 変更の適用とテスト</h3>
                 <div class="step">
                     <div class="step-number">4</div>
-                    <div>
+                    <div class="step-content">
                         <h4>変更を保存</h4>
                         <p>エディタで変更を保存してください。</p>
                     </div>
@@ -1392,25 +1412,25 @@ instruction=f"""
 
                 <div class="step">
                     <div class="step-number">5</div>
-                    <div>
+                    <div class="step-content">
                         <h4>サーバーを再起動</h4>
                         <p>現在のサーバーを停止し（Ctrl+C）、再度起動します：</p>
                         <div class="code-block">
 cd ..
 adk web jira_remote_mcp_apikey_agent/
-<button class="copy-button" onclick="copyToClipboard('cd ..\nadk web jira_remote_mcp_apikey_agent/')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cd ..\nadk web jira_remote_mcp_apikey_agent/', this)">コピー</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-number">6</div>
-                    <div>
+                    <div class="step-content">
                         <h4>変更の確認</h4>
                         <p>ブラウザをリロードして、エージェントの挙動を確認してください：</p>
                         <div class="code-block">
 こんにちは！自己紹介をお願いします。
-<button class="copy-button" onclick="copyToClipboard('こんにちは！自己紹介をお願いします。')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('こんにちは！自己紹介をお願いします。', this)">コピー</button>
                         </div>
                         <p><strong>期待する結果:</strong> 変更したプロンプトに基づいた返答が表示される</p>
                     </div>
@@ -1426,7 +1446,7 @@ adk web jira_remote_mcp_apikey_agent/
                         <p><code>name</code> フィールドを変更して、エージェントの表示名を変更できます：</p>
                         <div class="code-block">
 name="ジラちゃん - チーム専用アシスタント",
-<button class="copy-button" onclick="copyToClipboard('name=\"ジラちゃん - チーム専用アシスタント\",')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('name=\"ジラちゃん - チーム専用アシスタント\",', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1443,7 +1463,7 @@ description="""
 カスタマイズされた Jira エージェントです。
 チーム専用の機能と親しみやすいインターフェースを提供します。
 """,
-<button class="copy-button" onclick="copyToClipboard('description=\"\"\"\nカスタマイズされた Jira エージェントです。\nチーム専用の機能と親しみやすいインターフェースを提供します。\n\"\"\",')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('description=\"\"\"\nカスタマイズされた Jira エージェントです。\nチーム専用の機能と親しみやすいインターフェースを提供します。\n\"\"\",', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1462,13 +1482,13 @@ description="""
                 <h3>🔄 元に戻す方法</h3>
                 <div class="step">
                     <div class="step-number">7</div>
-                    <div>
+                    <div class="step-content">
                         <h4>オリジナルに戻す</h4>
                         <p>変更を元に戻したい場合は、バックアップファイルを使用します：</p>
                         <div class="code-block">
 cd jira_remote_mcp_apikey_agent/
 cp agent.py.backup agent.py
-<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/\ncp agent.py.backup agent.py')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/\ncp agent.py.backup agent.py', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1520,7 +1540,7 @@ cp agent.py.backup agent.py
                 <h3>🔗 このエージェントの仕組み</h3>
                 <div class="step">
                     <div class="step-number">1</div>
-                    <div>
+                    <div class="step-content">
                         <h4>アーキテクチャの理解</h4>
                         <div class="file-tree">
                             <ul>
@@ -1540,12 +1560,12 @@ cp agent.py.backup agent.py
                 <h3>🛠️ 利用可能な Jira 操作</h3>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <div>
+                    <div class="step-content">
                         <h4>実際にツールを確認</h4>
                         <p>エージェントに以下の質問をして、利用可能なツールを確認してみましょう：</p>
                         <div class="code-block">
 どのような Jira 操作ができますか？利用可能なツールを教えてください。
-<button class="copy-button" onclick="copyToClipboard('どのような Jira 操作ができますか？利用可能なツールを教えてください。')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('どのような Jira 操作ができますか？利用可能なツールを教えてください。', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1556,7 +1576,7 @@ cp agent.py.backup agent.py
                     <h4>例1: プロジェクト情報の取得</h4>
                     <div class="code-block">
 利用可能なプロジェクトをすべて表示してください。プロジェクトキー、名前、説明を含めてください。
-<button class="copy-button" onclick="copyToClipboard('利用可能なプロジェクトをすべて表示してください。プロジェクトキー、名前、説明を含めてください。')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('利用可能なプロジェクトをすべて表示してください。プロジェクトキー、名前、説明を含めてください。', this)">コピー</button>
                     </div>
                     <p><strong>学習ポイント:</strong> プロジェクト一覧取得ツールの動作</p>
                 </div>
@@ -1574,7 +1594,7 @@ assignee = currentUser() AND status != Done という JQL クエリを実行し�
                     <h4>例3: 課題の詳細情報取得</h4>
                     <div class="code-block">
 最近更新された課題を1件選んで、その詳細情報（コメント、添付ファイル、課題の履歴を含む）を表示してください。
-<button class="copy-button" onclick="copyToClipboard('最近更新された課題を1件選んで、その詳細情報（コメント、添付ファイル、課題の履歴を含む）を表示してください。')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('最近更新された課題を1件選んで、その詳細情報（コメント、添付ファイル、課題の履歴を含む）を表示してください。', this)">コピー</button>
                     </div>
                     <p><strong>学習ポイント:</strong> 複数のツールを組み合わせた操作</p>
                 </div>
@@ -1583,7 +1603,7 @@ assignee = currentUser() AND status != Done という JQL クエリを実行し�
                     <h4>例4: 新しい課題の作成</h4>
                     <div class="code-block">
 「ハンズオンガイドのテスト」という題名でタスクを作成してください。説明には「ADK ハンズオンでのテスト課題です」と入力してください。
-<button class="copy-button" onclick="copyToClipboard('「ハンズオンガイドのテスト」という題名でタスクを作成してください。説明には「ADK ハンズオンでのテスト課題です」と入力してください。')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('「ハンズオンガイドのテスト」という題名でタスクを作成してください。説明には「ADK ハンズオンでのテスト課題です」と入力してください。', this)">コピー</button>
                     </div>
                     <p><strong>学習ポイント:</strong> 課題作成ツールの使用</p>
                     <div class="alert alert-warning">
@@ -1594,7 +1614,7 @@ assignee = currentUser() AND status != Done という JQL クエリを実行し�
                 <h3>🔍 ツール実行の観察</h3>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <div>
+                    <div class="step-content">
                         <h4>ツール呼び出しの確認</h4>
                         <p>エージェントがツールを使用する際は、以下のような流れで動作します：</p>
                         <ol>
@@ -1610,12 +1630,12 @@ assignee = currentUser() AND status != Done という JQL クエリを実行し�
                 <h3>⚡ 高度な連携パターン</h3>
                 <div class="step">
                     <div class="step-number">4</div>
-                    <div>
+                    <div class="step-content">
                         <h4>複数ツールの組み合わせ</h4>
                         <p>以下のような複雑な操作も可能です：</p>
                         <div class="code-block">
 プロジェクト一覧を取得して、各プロジェクトの未完了課題数を調べ、最も課題が多いプロジェクトを教えてください。
-<button class="copy-button" onclick="copyToClipboard('プロジェクト一覧を取得して、各プロジェクトの未完了課題数を調べ、最も課題が多いプロジェクトを教えてください。')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('プロジェクト一覧を取得して、各プロジェクトの未完了課題数を調べ、最も課題が多いプロジェクトを教えてください。', this)">コピー</button>
                         </div>
                         <p><strong>学習ポイント:</strong> 複数のAPIコールを自動で組み合わせる能力</p>
                     </div>
@@ -1659,7 +1679,7 @@ assignee = currentUser() AND status != Done という JQL クエリを実行し�
 3. 今週作成された課題の一覧
 4. 優先度別の課題分布
 レポートは表形式で見やすく整理してください。
-<button class="copy-button" onclick="copyToClipboard('以下の分析レポートを作成してください：\n1. 全プロジェクトの課題数\n2. 自分に割り当てられた課題の状況\n3. 今週作成された課題の一覧\n4. 優先度別の課題分布\nレポートは表形式で見やすく整理してください。')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('以下の分析レポートを作成してください：\n1. 全プロジェクトの課題数\n2. 自分に割り当てられた課題の状況\n3. 今週作成された課題の一覧\n4. 優先度別の課題分布\nレポートは表形式で見やすく整理してください。', this)">コピー</button>
                     </div>
                 </div>
 
@@ -1725,7 +1745,7 @@ assignee = currentUser() AND status != Done という JQL クエリを実行し�
                                 <div class="code-block">
 # .env ファイルの確認（Token は表示されません）
 grep -v API_TOKEN .env
-<button class="copy-button" onclick="copyToClipboard('grep -v API_TOKEN .env')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# .env ファイルの確認（Token は表示されません）\ngrep -v API_TOKEN .env', this)">コピー</button>
                                 </div>
                             </li>
                             <li><strong>メールアドレスの確認</strong>
@@ -1736,7 +1756,7 @@ grep -v API_TOKEN .env
                                 <div class="code-block">
 curl -u "your-email@example.com:YOUR_API_TOKEN" \
   "https://your-domain.atlassian.net/rest/api/3/myself"
-<button class="copy-button" onclick="copyToClipboard('curl -u \"your-email@example.com:YOUR_API_TOKEN\" \"https://your-domain.atlassian.net/rest/api/3/myself\"')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('curl -u \"your-email@example.com:YOUR_API_TOKEN\" \"https://your-domain.atlassian.net/rest/api/3/myself\"', this)">コピー</button>
                                 </div>
                             </li>
                         </ol>
@@ -1767,21 +1787,21 @@ curl -u "your-email@example.com:YOUR_API_TOKEN" \
 # 仮想環境がアクティブか確認
 which python
 # 期待する結果: .venv/bin/python のパスが表示される
-<button class="copy-button" onclick="copyToClipboard('which python')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# 仮想環境がアクティブか確認\nwhich python\n# 期待する結果: .venv/bin/python のパスが表示される', this)">コピー</button>
                                 </div>
                             </li>
                             <li><strong>依存関係の確認</strong>
                                 <div class="code-block">
 # ADK がインストールされているか確認
 pip show google-adk
-<button class="copy-button" onclick="copyToClipboard('pip show google-adk')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# ADK がインストールされているか確認\npip show google-adk', this)">コピー</button>
                                 </div>
                             </li>
                             <li><strong>ポートの確認</strong>
                                 <div class="code-block">
 # ポート 8000 が使用されているか確認
 lsof -i :8000
-<button class="copy-button" onclick="copyToClipboard('lsof -i :8000')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# ポート 8000 が使用されているか確認\nlsof -i :8000', this)">コピー</button>
                                 </div>
                             </li>
                         </ol>
@@ -1811,14 +1831,14 @@ lsof -i :8000
                                 <p>.env ファイルに以下を追加:</p>
                                 <div class="code-block">
 JIRA_CONNECTION_TIMEOUT=60
-<button class="copy-button" onclick="copyToClipboard('JIRA_CONNECTION_TIMEOUT=60')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('JIRA_CONNECTION_TIMEOUT=60', this)">コピー</button>
                                 </div>
                             </li>
                             <li><strong>ネットワーク接続の確認</strong>
                                 <div class="code-block">
 # MCP サーバーへの接続確認
 curl -I https://mcp.atlassian.com/v1/sse
-<button class="copy-button" onclick="copyToClipboard('curl -I https://mcp.atlassian.com/v1/sse')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# MCP サーバーへの接続確認\ncurl -I https://mcp.atlassian.com/v1/sse', this)">コピー</button>
                                 </div>
                             </li>
                             <li><strong>プロキシ設定の確認</strong>
@@ -1849,7 +1869,7 @@ curl -I https://mcp.atlassian.com/v1/sse
 # 自分の権限を確認
 curl -u "your-email:token" \
   "https://your-domain.atlassian.net/rest/api/3/mypermissions"
-<button class="copy-button" onclick="copyToClipboard('curl -u \"your-email:token\" \"https://your-domain.atlassian.net/rest/api/3/mypermissions\"')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# 自分の権限を確認\ncurl -u \"your-email:token\" \\\n  \"https://your-domain.atlassian.net/rest/api/3/mypermissions\"', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1858,19 +1878,19 @@ curl -u "your-email:token" \
 
                 <div class="step">
                     <div class="step-number">1</div>
-                    <div>
+                    <div class="step-content">
                         <h4>ログの確認</h4>
                         <p>adk web の実行時にログを詳細表示:</p>
                         <div class="code-block">
 adk web --verbose jira_remote_mcp_apikey_agent/
-<button class="copy-button" onclick="copyToClipboard('adk web --verbose jira_remote_mcp_apikey_agent/')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('adk web --verbose jira_remote_mcp_apikey_agent/', this)">コピー</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="step">
                     <div class="step-number">2</div>
-                    <div>
+                    <div class="step-content">
                         <h4>手動での API テスト</h4>
                         <p>エージェントを使わず、直接 Jira API をテスト:</p>
                         <div class="code-block">
@@ -1878,7 +1898,7 @@ adk web --verbose jira_remote_mcp_apikey_agent/
 curl -u "your-email@example.com:YOUR_API_TOKEN" \
   -H "Accept: application/json" \
   "https://your-domain.atlassian.net/rest/api/3/project"
-<button class="copy-button" onclick="copyToClipboard('curl -u \"your-email@example.com:YOUR_API_TOKEN\" -H \"Accept: application/json\" \"https://your-domain.atlassian.net/rest/api/3/project\"')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# プロジェクト一覧の取得テスト\ncurl -u \"your-email@example.com:YOUR_API_TOKEN\" \\\n  -H \"Accept: application/json\" \\\n  \"https://your-domain.atlassian.net/rest/api/3/project\"', this)">コピー</button>
                         </div>
                     </div>
                 </div>
@@ -1920,7 +1940,7 @@ rm -rf .venv
 uv venv --python "python3.11" ".venv"
 source .venv/bin/activate
 uv sync --all-extras
-<button class="copy-button" onclick="copyToClipboard('deactivate\nrm -rf .venv\nuv venv --python \"python3.11\" \".venv\"\nsource .venv/bin/activate\nuv sync --all-extras')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('deactivate\nrm -rf .venv\nuv venv --python \"python3.11\" \".venv\"\nsource .venv/bin/activate\nuv sync --all-extras', this)">コピー</button>
                                 </div>
                             </li>
                             <li><strong>設定ファイルの再作成</strong>
@@ -1929,14 +1949,14 @@ cd jira_remote_mcp_apikey_agent/
 rm .env
 cp .env.example .env
 # 再度設定を編集
-<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/\nrm .env\ncp .env.example .env')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('cd jira_remote_mcp_apikey_agent/\nrm .env\ncp .env.example .env\n# 再度設定を編集', this)">コピー</button>
                                 </div>
                             </li>
                             <li><strong>エージェントコードの復元</strong>
                                 <div class="code-block">
 # バックアップから復元（作成済みの場合）
 cp agent.py.backup agent.py
-<button class="copy-button" onclick="copyToClipboard('cp agent.py.backup agent.py')">コピー</button>
+<button class="copy-button" onclick="copyToClipboard('# バックアップから復元（作成済みの場合）\ncp agent.py.backup agent.py', this)">コピー</button>
                                 </div>
                             </li>
                         </ol>
@@ -2068,10 +2088,9 @@ cp agent.py.backup agent.py
         });
 
         // Copy to clipboard functionality
-        function copyToClipboard(text) {
+        function copyToClipboard(text, button) {
             navigator.clipboard.writeText(text).then(function() {
                 // Show feedback
-                const button = event.target;
                 const originalText = button.textContent;
                 button.textContent = 'コピー完了！';
                 button.classList.add('copied');
